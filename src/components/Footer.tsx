@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { Anchor, Phone, Mail, MapPin } from "lucide-react";
 
-const quickLinks = ["STCW Courses", "Admissions", "Student Portal", "Pay Fees", "Verify Certificate", "Privacy Policy"];
+const quickLinks = [
+  { label: "STCW Courses", href: "/courses" },
+  { label: "Admissions", href: "/admissions" },
+  { label: "Student Portal", href: "/portal/dashboard" },
+  { label: "News & Events", href: "/news" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Privacy Policy", href: "/privacy" },
+];
 const programmes = ["Pre-Sea Deck Cadet", "Pre-Sea Engineering", "Basic Safety Training", "GMDSS / GOC", "CoC Revalidation", "Port Management"];
 
 export default function Footer() {
@@ -50,9 +57,9 @@ export default function Footer() {
             <h4 className="text-gold text-xs font-bold uppercase tracking-widest mb-3">Quick Links</h4>
             <ul className="space-y-1.5">
               {quickLinks.map((l) => (
-                <li key={l}>
-                  <Link href="#" className="text-white/45 text-sm hover:text-white transition-colors">
-                    {l}
+                <li key={l.label}>
+                  <Link href={l.href} className="text-white/45 text-sm hover:text-white transition-colors">
+                    {l.label}
                   </Link>
                 </li>
               ))}
@@ -120,6 +127,9 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-white/25 text-xs">
           <span>© 2025 SeaLearn Nigeria Maritime Institute. All rights reserved.</span>
           <span>NIMASA · IMO STCW 2010 · NUC · ISO 9001:2015</span>
+          <Link href="/auth/admin-login" className="text-white/20 hover:text-white/50 transition-colors">
+            Staff Login
+          </Link>
         </div>
       </div>
     </footer>

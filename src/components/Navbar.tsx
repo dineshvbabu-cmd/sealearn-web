@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/admissions", label: "Admissions" },
   { href: "/news", label: "News" },
   { href: "/contact", label: "Contact" },
+  { href: "/portal/dashboard", label: "Portal" },
 ];
 
 export default function Navbar() {
