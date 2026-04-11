@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { updateApplicationStatus } from "@/actions/site-config";
 
 const statusColors: Record<string, string> = {
   DRAFT: "bg-surface text-muted",
@@ -34,6 +35,7 @@ export default async function AdminApplicationsPage() {
                 <th className="text-left px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Course</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Submitted</th>
+                <th className="text-right px-5 py-3 text-xs font-bold text-muted uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -43,7 +45,7 @@ export default async function AdminApplicationsPage() {
                     <p className="font-semibold text-navy">{app.user.name}</p>
                     <p className="text-xs text-muted">{app.user.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-muted text-xs max-w-[220px] truncate">{app.course.title}</td>
+                  <td className="px-4 py-3 text-muted text-xs max-w-[200px] truncate">{app.course.title}</td>
                   <td className="px-4 py-3">
                     <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${statusColors[app.status] ?? "bg-surface text-muted"}`}>
                       {app.status.replace("_", " ")}
@@ -51,6 +53,40 @@ export default async function AdminApplicationsPage() {
                   </td>
                   <td className="px-4 py-3 text-muted text-xs">
                     {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString("en-GB") : "—"}
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                      {app.status !== "UNDER_REVIEW" && app.status !== "ACCEPTED" && app.status !== "REJECTED" && (
+                        <form action={async () => {
+                          "use server";
+                          await updateApplicationStatus(app.id, "UNDER_REVIEW");
+                        }}>
+                          <button type="submit" className="text-xs text-amber border border-amber/30 px-2.5 py-1 rounded-lg hover:bg-amber/10 transition-colors">
+                            Review
+                          </button>
+                        </form>
+                      )}
+                      {app.status !== "ACCEPTED" && (
+                        <form action={async () => {
+                          "use server";
+                          await updateApplicationStatus(app.id, "ACCEPTED");
+                        }}>
+                          <button type="submit" className="text-xs text-jade border border-jade/30 px-2.5 py-1 rounded-lg hover:bg-jade/10 transition-colors font-bold">
+                            ✓ Accept
+                          </button>
+                        </form>
+                      )}
+                      {app.status !== "REJECTED" && app.status !== "ACCEPTED" && (
+                        <form action={async () => {
+                          "use server";
+                          await updateApplicationStatus(app.id, "REJECTED");
+                        }}>
+                          <button type="submit" className="text-xs text-danger border border-danger/30 px-2.5 py-1 rounded-lg hover:bg-danger/10 transition-colors">
+                            Reject
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -60,6 +96,10 @@ export default async function AdminApplicationsPage() {
             <div className="px-5 py-10 text-center text-muted text-sm">No applications yet.</div>
           )}
         </div>
+      </div>
+
+      <div className="mt-4 bg-teal/5 border border-teal/20 rounded-lg p-3 text-xs text-muted">
+        <strong className="text-navy">Accepting an application</strong> automatically creates a pending enrolment for the student. They will then need to complete payment to activate their course access.
       </div>
     </>
   );

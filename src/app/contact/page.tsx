@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
+import { getSiteSection } from "@/lib/site-config";
 
-const contactInfo = [
-  { icon: <MapPin size={18} className="text-gold" />, label: "Address", value: "Apapa Port Road, Lagos, Nigeria" },
-  { icon: <Phone size={18} className="text-gold" />, label: "Phone", value: "+234 701 234 5678" },
-  { icon: <Mail size={18} className="text-gold" />, label: "Email", value: "info@sealearn.edu.ng" },
-  { icon: <Clock size={18} className="text-gold" />, label: "Office Hours", value: "Mon–Fri, 8:00 AM – 5:00 PM WAT" },
-];
-
-export default function ContactPage() {
+export default async function ContactPage() {
+  const cfg = await getSiteSection("contact");
+  const contactInfo = [
+    { icon: <MapPin size={18} className="text-gold" />, label: "Address", value: cfg.address },
+    { icon: <Phone size={18} className="text-gold" />, label: "Phone", value: cfg.phone },
+    { icon: <Mail size={18} className="text-gold" />, label: "Email", value: cfg.email },
+    { icon: <Clock size={18} className="text-gold" />, label: "Office Hours", value: cfg.office_hours },
+  ];
   return (
     <>
       <div className="bg-gradient-to-br from-navy via-ocean to-teal text-white px-6 py-14">
@@ -81,7 +82,7 @@ export default function ContactPage() {
             </div>
             <div className="mt-5 pt-5 border-t border-white/10">
               <div className="text-white/45 text-xs uppercase tracking-wide mb-1">Emergency (24/7)</div>
-              <div className="text-gold font-bold text-base">+234 801 999 0001</div>
+              <div className="text-gold font-bold text-base">{cfg.emergency_phone}</div>
             </div>
           </div>
 

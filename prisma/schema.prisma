@@ -387,3 +387,20 @@ model Post {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ─────────────────────────────────────────────────────────────
+// SITE CMS CONTENT
+// ─────────────────────────────────────────────────────────────
+
+model SiteConfig {
+  id        String   @id @default(cuid())
+  section   String   // homepage | contact | about | admissions | general | footer
+  key       String
+  value     String   @db.Text
+  type      String   @default("text") // text | textarea | url | boolean
+  label     String
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([section, key])
+}

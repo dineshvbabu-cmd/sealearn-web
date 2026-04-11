@@ -13,15 +13,17 @@ import {
   GraduationCap,
   DollarSign,
   ClipboardList,
+  FileEdit,
 } from "lucide-react";
 
 const navItems = [
   { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/content", icon: FileEdit, label: "Content / CMS" },
   { href: "/admin/courses", icon: BookOpen, label: "Courses & Fees" },
   { href: "/admin/enrolments", icon: ClipboardList, label: "Enrolments" },
+  { href: "/admin/applications", icon: GraduationCap, label: "Applications" },
   { href: "/admin/news", icon: Newspaper, label: "News & Events" },
   { href: "/admin/users", icon: Users, label: "Users & Students" },
-  { href: "/admin/applications", icon: GraduationCap, label: "Applications" },
   { href: "/admin/payments", icon: DollarSign, label: "Payments" },
 ];
 

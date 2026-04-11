@@ -1,7 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { courses, newsItems, stats } from "@/lib/data";
+import { courses, newsItems } from "@/lib/data";
 import { ArrowRight, CheckCircle, Shield, Award, Users } from "lucide-react";
+import { getSiteSection } from "@/lib/site-config";
+import { prisma } from "@/lib/prisma";
+
+const featureIcons = [
+  <Shield key="shield" size={22} className="text-teal" />,
+  <Award key="award" size={22} className="text-gold" />,
+  <Users key="users" size={22} className="text-ocean" />,
+  <CheckCircle key="check" size={22} className="text-jade" />,
+];
 
 const accreditations = [
   { icon: "🇳🇬", label: "NIMASA" },
@@ -11,32 +20,27 @@ const accreditations = [
   { icon: "🎓", label: "NUC" },
 ];
 
-const features = [
-  {
-    icon: <Shield size={22} className="text-teal" />,
-    title: "NIMASA Approved",
-    body: "All programmes fully approved by NIMASA and compliant with IMO/STCW 2010 Manila amendments.",
-  },
-  {
-    icon: <Award size={22} className="text-gold" />,
-    title: "98% Pass Rate",
-    body: "Industry-leading pass rates backed by world-class instructors and state-of-the-art simulators.",
-  },
-  {
-    icon: <Users size={22} className="text-ocean" />,
-    title: "28+ Industry Partners",
-    body: "Direct placement partnerships with leading Nigerian and international shipping companies.",
-  },
-  {
-    icon: <CheckCircle size={22} className="text-jade" />,
-    title: "Digital Certificates",
-    body: "NIMASA-registered, QR-verifiable digital certificates stored securely on Cloudflare R2.",
-  },
-];
+export default async function HomePage() {
+  const [cfg, dbCourses, dbNews] = await Promise.all([
+    getSiteSection("homepage"),
+    prisma.course.findMany({ where: { isActive: true }, orderBy: { level: "asc" }, take: 3 }).catch(() => []),
+    prisma.post.findMany({ where: { publishedAt: { not: null } }, orderBy: { publishedAt: "desc" }, take: 3 }).catch(() => []),
+  ]);
 
-export default function HomePage() {
-  const featuredCourses = courses.slice(0, 3);
-  const latestNews = newsItems.slice(0, 3);
+  const featuredCourses = dbCourses.length ? dbCourses : courses.slice(0, 3);
+  const latestNews = dbNews.length ? dbNews : newsItems.slice(0, 3);
+
+  const statsBar = [
+    { value: cfg.stat_students, label: cfg.stat_students_label },
+    { value: cfg.stat_passrate, label: cfg.stat_passrate_label },
+    { value: cfg.stat_partners, label: cfg.stat_partners_label },
+    { value: cfg.stat_years, label: cfg.stat_years_label },
+  ];
+  const features = [1,2,3,4].map((n, i) => ({
+    icon: featureIcons[i],
+    title: cfg[`feature${n}_title`],
+    body: cfg[`feature${n}_body`],
+  }));
 
   return (
     <>
@@ -55,27 +59,20 @@ export default function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:py-28">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/40 text-gold px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-5">
-              🇳🇬 NIMASA Approved · Lagos, Nigeria
+              {cfg.hero_badge}
             </div>
             <h1 className="font-cinzel text-3xl sm:text-4xl lg:text-5xl text-white font-bold leading-tight mb-4">
-              Nigeria's Premier Maritime Training Institution
+              {cfg.hero_title}
             </h1>
             <p className="text-white/60 text-base sm:text-lg leading-relaxed mb-8">
-              NIMASA Approved · IMO / STCW 2010 Manila Compliant · Pre-Sea to CoC Programmes.
-              Shaping world-class Nigerian seafarers since 2000.
+              {cfg.hero_subtitle}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/admissions"
-                className="inline-flex items-center gap-2 bg-gold text-navy font-bold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors"
-              >
-                Apply Now <ArrowRight size={16} />
+              <Link href="/admissions" className="inline-flex items-center gap-2 bg-gold text-navy font-bold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors">
+                {cfg.hero_cta_primary} <ArrowRight size={16} />
               </Link>
-              <Link
-                href="/courses"
-                className="inline-flex items-center gap-2 border border-white/40 text-white px-6 py-3 rounded-full hover:bg-white/10 transition-colors"
-              >
-                View STCW Courses
+              <Link href="/courses" className="inline-flex items-center gap-2 border border-white/40 text-white px-6 py-3 rounded-full hover:bg-white/10 transition-colors">
+                {cfg.hero_cta_secondary}
               </Link>
             </div>
           </div>
@@ -84,12 +81,9 @@ export default function HomePage() {
 
       {/* ── STATS BAR ─────────────────────────────────────────── */}
       <div className="bg-gold">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-5">
-          {stats.map((s, i) => (
-            <div
-              key={s.label}
-              className={`py-4 px-4 text-center ${i < stats.length - 1 ? "border-r border-black/10" : ""}`}
-            >
+        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4">
+          {statsBar.map((s, i) => (
+            <div key={i} className={`py-4 px-4 text-center ${i < statsBar.length - 1 ? "border-r border-black/10" : ""}`}>
               <div className="font-cinzel text-2xl font-bold text-navy">{s.value}</div>
               <div className="text-navy/60 text-xs mt-0.5">{s.label}</div>
             </div>
