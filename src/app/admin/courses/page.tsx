@@ -49,7 +49,9 @@ export default async function AdminCoursesPage() {
               {courses.map((course) => (
                 <tr key={course.id} className="hover:bg-surface/50 transition-colors">
                   <td className="px-5 py-3">
-                    <p className="font-semibold text-navy">{course.title}</p>
+                    <Link href={`/admin/courses/${course.id}`} className="font-semibold text-navy hover:text-ocean transition-colors">
+                      {course.title}
+                    </Link>
                     <p className="text-xs text-muted">{course.slug}</p>
                   </td>
                   <td className="px-4 py-3 text-muted text-xs">{levelLabels[course.level] ?? course.level}</td>
