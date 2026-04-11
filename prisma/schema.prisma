@@ -113,6 +113,7 @@ model Course {
   applications     Application[]
   enrolments       Enrolment[]
   intakeDates      IntakeDate[]
+  resources        CourseResource[]
 }
 
 model IntakeDate {
@@ -403,4 +404,26 @@ model SiteConfig {
   updatedAt DateTime @updatedAt
 
   @@unique([section, key])
+}
+
+// ─────────────────────────────────────────────────────────────
+// COURSE RESOURCES (Library)
+// ─────────────────────────────────────────────────────────────
+
+model CourseResource {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  type        String   // video | pdf | ppt | doc | image
+  url         String   @db.Text  // R2 URL, YouTube embed, or external URL
+  storageKey  String?  // R2 object key for managed files
+  description String?  @db.Text
+  fileSize    String?  // human-readable, e.g. "2.4 MB"
+  duration    String?  // for videos, e.g. "12:34"
+  topic       String?  // e.g. "Navigation", "Safety", "Cargo"
+  sortOrder   Int      @default(0)
+  isPublic    Boolean  @default(false) // visible without enrollment
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

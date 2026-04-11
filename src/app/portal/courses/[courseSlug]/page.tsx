@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, Lock, PlayCircle, FileText, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle, Lock, PlayCircle, FileText, Clock, Library } from "lucide-react";
 
 export default async function LMSCourseModulesPage({
   params,
@@ -94,9 +94,17 @@ export default async function LMSCourseModulesPage({
           {course.stcwRegulation ?? "STCW Programme"}
         </p>
         <h1 className="font-cinzel text-xl font-bold mb-3">{course.title}</h1>
-        <div className="flex items-center gap-6 text-white/50 text-xs mb-4">
-          <span className="flex items-center gap-1"><Clock size={12} />{course.durationWeeks} weeks</span>
-          <span>{totalModules} modules</span>
+        <div className="flex items-center justify-between gap-6 mb-4">
+          <div className="flex items-center gap-6 text-white/50 text-xs">
+            <span className="flex items-center gap-1"><Clock size={12} />{course.durationWeeks} weeks</span>
+            <span>{totalModules} modules</span>
+          </div>
+          <Link
+            href={`/portal/courses/${courseSlug}/resources`}
+            className="inline-flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <Library size={12} /> Library
+          </Link>
         </div>
         {/* Progress */}
         <div>

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Plus, Pencil, Trash2, PlayCircle, FileText, GripVertical } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, PlayCircle, FileText, GripVertical, Library } from "lucide-react";
 import { deleteModule, deleteLesson } from "@/actions/modules";
 
 export default async function AdminCourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +33,12 @@ export default async function AdminCourseDetailPage({ params }: { params: Promis
           </p>
         </div>
         <div className="flex gap-2">
+          <Link
+            href={`/admin/courses/${id}/resources`}
+            className="inline-flex items-center gap-2 border border-border text-muted px-4 py-2 rounded-lg hover:bg-surface text-sm transition-colors"
+          >
+            <Library size={13} /> Library
+          </Link>
           <Link
             href={`/admin/courses/${id}/edit`}
             className="inline-flex items-center gap-2 border border-border text-muted px-4 py-2 rounded-lg hover:bg-surface text-sm transition-colors"
