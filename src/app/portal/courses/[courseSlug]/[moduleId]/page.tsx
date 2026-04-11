@@ -32,6 +32,7 @@ export default async function ModuleViewerPage({
   });
 
   if (!enrolment) redirect("/portal/courses");
+  if (enrolment.status === "PENDING_PAYMENT") redirect(`/portal/courses/${courseSlug}`);
 
   const isCompleted = !!enrolment.progress[0]?.completedAt;
   const moduleIndex = course.modules.findIndex((m) => m.id === moduleId);

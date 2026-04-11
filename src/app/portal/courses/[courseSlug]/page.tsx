@@ -31,8 +31,44 @@ export default async function LMSCourseModulesPage({
     include: { progress: true },
   });
 
-  if (!enrolment) {
-    redirect("/portal/courses");
+  if (!enrolment) redirect("/portal/courses");
+
+  // Block access if payment not completed
+  if (enrolment.status === "PENDING_PAYMENT") {
+    return (
+      <div className="px-6 py-8 max-w-4xl mx-auto">
+        <Link href="/portal/courses" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-navy mb-6">
+          <ArrowLeft size={14} /> My Courses
+        </Link>
+        <div className="bg-white rounded-xl border border-amber/30 shadow-sm p-10 text-center">
+          <div className="w-16 h-16 rounded-full bg-amber/10 flex items-center justify-center mx-auto mb-4">
+            <Lock size={28} className="text-amber" />
+          </div>
+          <h2 className="font-cinzel text-xl font-bold text-navy mb-2">Payment Required</h2>
+          <p className="text-muted text-sm mb-1">
+            Your enrolment for <strong>{course.title}</strong> is pending payment.
+          </p>
+          <p className="text-muted text-sm mb-6">
+            Complete your tuition payment to unlock all course content.
+          </p>
+          <div className="bg-surface rounded-lg p-4 inline-block text-left mb-6">
+            <p className="text-xs text-muted mb-1">Amount due</p>
+            <p className="text-2xl font-bold text-navy">₦{enrolment.totalFee.toLocaleString()}</p>
+            {enrolment.amountPaid > 0 && (
+              <p className="text-xs text-jade mt-1">₦{enrolment.amountPaid.toLocaleString()} already paid</p>
+            )}
+          </div>
+          <div>
+            <Link
+              href="/portal/fees"
+              className="inline-flex items-center gap-2 bg-gold text-navy font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition-colors"
+            >
+              Pay Now
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const progressMap = new Map(enrolment.progress.map((p) => [p.moduleId, p]));
