@@ -20,6 +20,20 @@ const accreditations = [
   { icon: "🎓", label: "NUC" },
 ];
 
+const levelTagColor: Record<string, string> = {
+  PRE_SEA: "bg-teal", SHORT_COURSE: "bg-gold", DEGREE: "bg-ocean",
+  POST_COC: "bg-jade", REFRESHER: "bg-steel",
+};
+const levelTag: Record<string, string> = {
+  PRE_SEA: "Pre-Sea", SHORT_COURSE: "Short Course", DEGREE: "Degree",
+  POST_COC: "Post-CoC", REFRESHER: "Refresher",
+};
+const fallbackImages = [
+  "https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=800&q=80",
+  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
+  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80",
+];
+
 export default async function HomePage() {
   const [cfg, dbCourses, dbNews] = await Promise.all([
     getSiteSection("homepage"),
@@ -27,8 +41,28 @@ export default async function HomePage() {
     prisma.post.findMany({ where: { publishedAt: { not: null } }, orderBy: { publishedAt: "desc" }, take: 3 }).catch(() => []),
   ]);
 
-  const featuredCourses = dbCourses.length ? dbCourses : courses.slice(0, 3);
-  const latestNews = dbNews.length ? dbNews : newsItems.slice(0, 3);
+  // Normalize DB courses to display shape; fall back to static if empty
+  const catColor: Record<string, string> = { news: "text-ocean", event: "text-jade", announcement: "text-amber" };
+  const catLabel: Record<string, string> = { news: "News", event: "Event", announcement: "Announcement" };
+
+  const featuredCourses = dbCourses.length
+    ? dbCourses.map((c, i) => ({
+        ...c,
+        imageUrl: fallbackImages[i % fallbackImages.length],
+        tag: levelTag[c.level] ?? c.level,
+        tagColor: levelTagColor[c.level] ?? "bg-navy",
+        durationText: `${c.durationWeeks} Weeks`,
+        feeText: `₦${c.feeNaira.toLocaleString()}`,
+      }))
+    : courses.slice(0, 3);
+
+  const latestNews = (dbNews.length ? dbNews.map((p) => ({
+    ...p,
+    imageUrl: p.imageUrl ?? fallbackImages[0],
+    categoryColor: catColor[p.category] ?? "text-ocean",
+    categoryLabel: catLabel[p.category] ?? p.category,
+    publishedAt: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "",
+  })) : newsItems.slice(0, 3)) as typeof newsItems;
 
   const statsBar = [
     { value: cfg.stat_students, label: cfg.stat_students_label },
