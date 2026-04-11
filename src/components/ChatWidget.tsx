@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Anchor, X, Send } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Anchor, X, Send, GripVertical } from "lucide-react";
 
 type Message = { role: "user" | "assistant" | "typing"; content: string };
 
@@ -26,9 +26,52 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Draggable position — null means use default CSS (bottom-6 right-6)
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const dragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const onDragStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    dragging.current = true;
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    // Anchor offset to the toggle button (bottom of container)
+    dragOffset.current = { x: clientX - rect.right, y: clientY - rect.bottom };
+  }, []);
+
+  useEffect(() => {
+    function onMove(e: MouseEvent | TouchEvent) {
+      if (!dragging.current) return;
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+      const newRight = window.innerWidth - (clientX - dragOffset.current.x);
+      const newBottom = window.innerHeight - (clientY - dragOffset.current.y);
+      setPos({
+        x: Math.max(8, Math.min(newRight, window.innerWidth - 64)),
+        y: Math.max(8, Math.min(newBottom, window.innerHeight - 64)),
+      });
+    }
+    function onUp() { dragging.current = false; }
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onUp);
+    };
+  }, []);
 
   async function send(text: string) {
     if (!text.trim() || loading) return;
@@ -106,7 +149,11 @@ export default function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div
+      ref={containerRef}
+      className="fixed z-50 flex flex-col items-end gap-3"
+      style={pos ? { bottom: pos.y, right: pos.x } : { bottom: 24, right: 24 }}
+    >
       {/* Panel */}
       {open && (
         <div className="w-80 sm:w-[340px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-border">
@@ -186,14 +233,24 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* Toggle button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-14 h-14 rounded-full bg-gradient-to-br from-navy to-ocean shadow-xl flex items-center justify-center text-gold hover:scale-105 transition-transform"
-        title="SeaLearn Assistant"
-      >
-        {open ? <X size={22} /> : <Anchor size={22} />}
-      </button>
+      {/* Toggle button with drag handle */}
+      <div className="flex items-center gap-1.5">
+        <div
+          onMouseDown={onDragStart}
+          onTouchStart={onDragStart}
+          className="w-6 h-14 flex items-center justify-center text-white/40 hover:text-white/80 cursor-grab active:cursor-grabbing transition-colors"
+          title="Drag to move"
+        >
+          <GripVertical size={16} />
+        </div>
+        <button
+          onClick={() => setOpen(!open)}
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-navy to-ocean shadow-xl flex items-center justify-center text-gold hover:scale-105 transition-transform"
+          title="SeaLearn Assistant"
+        >
+          {open ? <X size={22} /> : <Anchor size={22} />}
+        </button>
+      </div>
     </div>
   );
 }
