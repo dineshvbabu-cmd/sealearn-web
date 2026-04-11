@@ -1,0 +1,389 @@
+// SeaLearn Nigeria — Prisma Schema
+// Railway PostgreSQL · Prisma 6
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUTH & USERS
+// ─────────────────────────────────────────────────────────────
+
+enum Role {
+  GUEST
+  CADET
+  STUDENT
+  INSTRUCTOR
+  REGISTRAR
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String
+  phone         String?
+  nin           String?   @unique  // Nigerian NIN
+  role          Role      @default(STUDENT)
+  passwordHash  String?
+  image         String?
+  mfaEnabled    Boolean   @default(false)
+  mfaSecret     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  applications  Application[]
+  enrolments    Enrolment[]
+  payments      Payment[]
+  practicalLogs PracticalLog[]
+  examAttempts  ExamAttempt[]
+  certificates  Certificate[]
+  // Instructor relations
+  taughtCourses Course[]         @relation("InstructorCourses")
+  gradedLogs    PracticalLog[]   @relation("InstructorSignOff")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────
+// COURSES
+// ─────────────────────────────────────────────────────────────
+
+enum CourseLevel {
+  PRE_SEA
+  SHORT_COURSE
+  DEGREE
+  POST_COC
+  REFRESHER
+}
+
+model Course {
+  id               String      @id @default(cuid())
+  slug             String      @unique
+  title            String
+  stcwRegulation   String?     // e.g. "VI/1", "II/1"
+  imoModelCourse   String?
+  level            CourseLevel
+  durationWeeks    Int
+  feeNaira         Int
+  applicationFee   Int         @default(15000)
+  description      String      @db.Text
+  eligibility      String      @db.Text
+  outcomes         String      @db.Text
+  isActive         Boolean     @default(true)
+  nimasaApproved   Boolean     @default(true)
+  nimasaRefNumber  String?
+  instructorId     String?
+  instructor       User?       @relation("InstructorCourses", fields: [instructorId], references: [id])
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  modules          Module[]
+  applications     Application[]
+  enrolments       Enrolment[]
+  intakeDates      IntakeDate[]
+}
+
+model IntakeDate {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  startDate   DateTime
+  endDate     DateTime
+  deadline    DateTime
+  isOpen      Boolean  @default(true)
+  capacity    Int      @default(30)
+  enrolments  Enrolment[]
+}
+
+model Module {
+  id          String    @id @default(cuid())
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  title       String
+  order       Int
+  videoUrl    String?   // Cloudflare Stream URL
+  scormUrl    String?   // R2 path
+  pdfUrl      String?   // R2 path
+  durationMin Int?
+  lessons     Lesson[]
+  quizzes     Quiz[]
+}
+
+model Lesson {
+  id         String  @id @default(cuid())
+  moduleId   String
+  module     Module  @relation(fields: [moduleId], references: [id])
+  title      String
+  order      Int
+  videoUrl   String?
+  pdfUrl     String?
+  durationMin Int?
+}
+
+// ─────────────────────────────────────────────────────────────
+// ADMISSIONS
+// ─────────────────────────────────────────────────────────────
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WAITLISTED
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id])
+  courseId        String
+  course          Course            @relation(fields: [courseId], references: [id])
+  status          ApplicationStatus @default(DRAFT)
+  // Personal
+  dateOfBirth     DateTime?
+  gender          String?
+  stateOfOrigin   String?
+  lga             String?
+  address         String?
+  // Documents (R2 paths)
+  passportPhotoUrl  String?
+  waecResultUrl     String?
+  ninDocUrl         String?
+  medicalCertUrl    String?  // ML5 or ENG1
+  seaServiceUrl     String?
+  // Next of kin
+  nokName         String?
+  nokRelationship String?
+  nokPhone        String?
+  // Meta
+  appFeePaymentId String?
+  submittedAt     DateTime?
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  reviewNotes     String?   @db.Text
+  offerLetterUrl  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENROLMENTS & PAYMENTS
+// ─────────────────────────────────────────────────────────────
+
+enum EnrolmentStatus {
+  PENDING_PAYMENT
+  ACTIVE
+  COMPLETED
+  SUSPENDED
+  WITHDRAWN
+}
+
+model Enrolment {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id])
+  courseId       String
+  course         Course          @relation(fields: [courseId], references: [id])
+  intakeDateId   String?
+  intakeDate     IntakeDate?     @relation(fields: [intakeDateId], references: [id])
+  status         EnrolmentStatus @default(PENDING_PAYMENT)
+  totalFee       Int
+  amountPaid     Int             @default(0)
+  scholarshipCode String?
+  discountAmount Int             @default(0)
+  startDate      DateTime?
+  endDate        DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  payments       Payment[]
+  progress       ModuleProgress[]
+  practicalLogs  PracticalLog[]
+  certificates   Certificate[]
+}
+
+enum PaymentMethod {
+  PAYSTACK_CARD
+  PAYSTACK_BANK
+  FLUTTERWAVE
+  USSD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  enrolmentId     String?
+  enrolment       Enrolment?    @relation(fields: [enrolmentId], references: [id])
+  amountNaira     Int
+  nimasaFee       Int           @default(0)
+  method          PaymentMethod
+  status          PaymentStatus @default(PENDING)
+  reference       String        @unique
+  providerRef     String?
+  receiptUrl      String?       // R2 path
+  metadata        Json?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
+// LMS PROGRESS
+// ─────────────────────────────────────────────────────────────
+
+model ModuleProgress {
+  id           String    @id @default(cuid())
+  enrolmentId  String
+  enrolment    Enrolment @relation(fields: [enrolmentId], references: [id])
+  moduleId     String
+  percentDone  Int       @default(0)
+  completedAt  DateTime?
+  updatedAt    DateTime  @updatedAt
+  @@unique([enrolmentId, moduleId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// PRACTICAL LOG (STCW Sea-Service Record)
+// ─────────────────────────────────────────────────────────────
+
+model PracticalLog {
+  id              String    @id @default(cuid())
+  enrolmentId     String
+  enrolment       Enrolment @relation(fields: [enrolmentId], references: [id])
+  studentId       String
+  student         User      @relation(fields: [studentId], references: [id])
+  stcwItem        String    // e.g. "Table A-II/1 item 3"
+  description     String    @db.Text
+  hoursLogged     Float
+  date            DateTime
+  signedById      String?
+  signedBy        User?     @relation("InstructorSignOff", fields: [signedById], references: [id])
+  signedAt        DateTime?
+  signatureUrl    String?   // R2 path to e-signature
+  createdAt       DateTime  @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
+// EXAMINATIONS
+// ─────────────────────────────────────────────────────────────
+
+model Quiz {
+  id        String     @id @default(cuid())
+  moduleId  String
+  module    Module     @relation(fields: [moduleId], references: [id])
+  title     String
+  timeLimitMin Int     @default(30)
+  passMark  Int        @default(70)
+  questions Question[]
+  attempts  ExamAttempt[]
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  text      String   @db.Text
+  type      String   @default("MCQ")  // MCQ, TRUE_FALSE, SHORT
+  options   Json?    // [{text, isCorrect}]
+  answer    String?
+  stcwRef   String?
+  marks     Int      @default(1)
+  order     Int
+}
+
+model ExamAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+  answers     Json     // {questionId: answer}
+  score       Int?
+  passed      Boolean?
+  startedAt   DateTime @default(now())
+  submittedAt DateTime?
+  ipAddress   String?
+}
+
+// ─────────────────────────────────────────────────────────────
+// CERTIFICATES
+// ─────────────────────────────────────────────────────────────
+
+model Certificate {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  enrolmentId     String
+  enrolment       Enrolment @relation(fields: [enrolmentId], references: [id])
+  type            String    // e.g. "BST", "GMDSS", "PRE_SEA_DECK"
+  nimasaNumber    String    @unique
+  stcwRegulation  String?
+  issueDate       DateTime  @default(now())
+  expiryDate      DateTime?
+  pdfUrl          String    // R2 path
+  qrCode          String    // verification URL
+  isRevoked       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
+// NEWS & EVENTS
+// ─────────────────────────────────────────────────────────────
+
+model Post {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String?
+  body        String   @db.Text
+  imageUrl    String?
+  category    String   @default("news")  // news | event | announcement
+  authorId    String?
+  publishedAt DateTime?
+  eventDate   DateTime?
+  eventVenue  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
