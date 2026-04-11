@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { Anchor } from "lucide-react";
+import { Anchor, LogOut } from "lucide-react";
+import { auth } from "@/auth";
+import { logoutAction } from "@/actions/auth";
+import { redirect } from "next/navigation";
 
 const sidebarLinks = [
   { href: "/portal/dashboard", icon: "🏠", label: "Dashboard" },
@@ -14,7 +17,13 @@ const sidebarLinks = [
   { href: "/portal/notifications", icon: "🔔", label: "Notifications" },
 ];
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
+export default async function PortalLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session) redirect("/auth/login");
+
+  const user = session.user;
+  const initials = user?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() ?? "S";
+
   return (
     <div className="flex min-h-[calc(100vh-64px)] bg-surface">
       {/* Sidebar */}
@@ -23,11 +32,11 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         <div className="px-4 py-4 border-b border-white/10">
           <div className="flex items-center gap-2.5 mb-0.5">
             <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center text-navy font-bold text-sm shrink-0">
-              C
+              {initials}
             </div>
             <div>
-              <div className="text-white text-xs font-bold">Chidi Okonkwo</div>
-              <div className="text-white/30 text-[10px]">Pre-Sea Deck · Jan 2025</div>
+              <div className="text-white text-xs font-bold truncate max-w-[100px]">{user?.name}</div>
+              <div className="text-white/30 text-[10px]">{(user as { role?: string })?.role ?? "Student"}</div>
             </div>
           </div>
         </div>
@@ -47,7 +56,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </nav>
 
         {/* Bottom */}
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-2">
           <Link
             href="/"
             className="flex items-center gap-2 text-white/30 hover:text-white/60 text-xs transition-colors"
@@ -55,6 +64,15 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             <Anchor size={12} />
             Back to main site
           </Link>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="flex items-center gap-2 text-white/30 hover:text-red-300 text-xs transition-colors"
+            >
+              <LogOut size={12} />
+              Sign Out
+            </button>
+          </form>
         </div>
       </aside>
 

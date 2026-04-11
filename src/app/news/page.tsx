@@ -1,6 +1,15 @@
 import Image from "next/image";
-import { newsItems } from "@/lib/data";
+import { newsItems as staticNews } from "@/lib/data";
 import { Calendar, MapPin } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+
+const categoryColorMap: Record<string, string> = {
+  achievement: "text-teal",
+  event: "text-ocean",
+  admissions: "text-jade",
+  news: "text-amber",
+  announcement: "text-steel",
+};
 
 const upcomingEvents = [
   { date: "15", month: "APR", title: "June 2025 Intake Orientation", time: "9:00 AM", venue: "Main Auditorium", color: "bg-navy" },
@@ -9,16 +18,46 @@ const upcomingEvents = [
   { date: "10", month: "OCT", title: "September Intake Graduation", time: "10:00 AM", venue: "Main Auditorium", color: "bg-jade" },
 ];
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  // Fetch from DB; fall back to static data if DB is unavailable
+  let posts: Array<{
+    slug: string; title: string; excerpt: string | null; category: string;
+    publishedAt: Date | null; imageUrl: string | null; eventVenue: string | null;
+  }> = [];
+  try {
+    posts = await prisma.post.findMany({
+      where: { publishedAt: { not: null } },
+      orderBy: { publishedAt: "desc" },
+      select: { slug: true, title: true, excerpt: true, category: true, publishedAt: true, imageUrl: true, eventVenue: true },
+    });
+  } catch {
+    // DB unavailable
+  }
+
+  const newsToShow = posts.length > 0
+    ? posts.map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt ?? "",
+        categoryLabel: (p.category.charAt(0).toUpperCase() + p.category.slice(1)),
+        categoryColor: categoryColorMap[p.category] ?? "text-muted",
+        publishedAt: p.publishedAt
+          ? p.publishedAt.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" })
+          : "",
+        imageUrl: p.imageUrl ?? "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=600&q=80",
+        eventVenue: p.eventVenue,
+      }))
+    : staticNews;
+
   return (
     <>
       {/* Header */}
       <div className="bg-gradient-to-br from-navy via-ocean to-teal text-white px-6 py-14">
         <div className="max-w-4xl mx-auto">
           <div className="inline-block bg-gold/20 border border-gold/35 text-gold text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
-            Module 12 · Public
+            Latest Updates
           </div>
-          <h1 className="font-cinzel text-3xl sm:text-4xl font-bold mb-3">News & Events</h1>
+          <h1 className="font-cinzel text-3xl sm:text-4xl font-bold mb-3">News &amp; Events</h1>
           <p className="text-white/55 text-base max-w-xl">
             Institutional news, NIMASA updates, upcoming events and media from SeaLearn Nigeria.
           </p>
@@ -32,7 +71,7 @@ export default function NewsPage() {
           <div className="lg:col-span-2">
             <h2 className="font-cinzel text-xl text-navy font-bold mb-6">Latest News</h2>
             <div className="flex flex-col gap-6">
-              {newsItems.map((item) => (
+              {newsToShow.map((item) => (
                 <article
                   key={item.slug}
                   className="bg-white rounded-xl border border-border shadow-sm overflow-hidden flex flex-col sm:flex-row gap-0 hover:shadow-md transition-shadow"
@@ -114,7 +153,7 @@ export default function NewsPage() {
 
             {/* Contact card */}
             <div className="mt-4 bg-surface rounded-xl border border-border p-4 text-sm">
-              <div className="font-bold text-navy mb-2">Media & Press Enquiries</div>
+              <div className="font-bold text-navy mb-2">Media &amp; Press Enquiries</div>
               <div className="text-muted text-xs leading-relaxed">
                 For press releases, interview requests or event coverage, please contact our
                 communications team.

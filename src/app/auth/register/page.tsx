@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Anchor, ArrowRight } from "lucide-react";
+import { useActionState } from "react";
+import { registerAction } from "@/actions/auth";
 
 const steps = [
   { num: 1, title: "Create Account", active: true },
@@ -9,6 +13,14 @@ const steps = [
 ];
 
 export default function RegisterPage() {
+  const [state, formAction, pending] = useActionState(
+    async (_prev: { error?: string } | null, formData: FormData) => {
+      const result = await registerAction(formData);
+      return result ?? null;
+    },
+    null
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-navy via-ocean to-teal px-4 py-12">
       <div className="max-w-lg mx-auto">
@@ -44,34 +56,28 @@ export default function RegisterPage() {
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           <div className="px-8 pt-7 pb-2">
             <h1 className="font-cinzel text-navy text-xl font-bold mb-1">Create Your Account</h1>
-            <p className="text-muted text-sm">
-              Step 1 of 4 — Account details. All fields required.
-            </p>
+            <p className="text-muted text-sm">Step 1 of 4 — Account details. All fields required.</p>
           </div>
 
           <div className="px-8 py-6">
-            <form className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Chidi"
-                    className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Okonkwo"
-                    className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
-                  />
-                </div>
+            {state?.error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-5">
+                {state.error}
+              </div>
+            )}
+
+            <form action={formAction} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
+                  Full Name
+                </label>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  placeholder="Chidi Okonkwo"
+                  className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
+                />
               </div>
 
               <div>
@@ -79,7 +85,9 @@ export default function RegisterPage() {
                   Email Address
                 </label>
                 <input
+                  name="email"
                   type="email"
+                  required
                   placeholder="you@example.com"
                   className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
                 />
@@ -90,6 +98,7 @@ export default function RegisterPage() {
                   Phone Number (+234)
                 </label>
                 <input
+                  name="phone"
                   type="tel"
                   placeholder="+234 800 000 0000"
                   className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
@@ -102,7 +111,10 @@ export default function RegisterPage() {
                     Password
                   </label>
                   <input
+                    name="password"
                     type="password"
+                    required
+                    minLength={8}
                     placeholder="Min. 8 characters"
                     className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
                   />
@@ -112,22 +124,23 @@ export default function RegisterPage() {
                     Confirm Password
                   </label>
                   <input
+                    name="confirm"
                     type="password"
+                    required
                     placeholder="Repeat password"
                     className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Programme hint */}
               <div className="bg-surface border border-border rounded-lg p-3 text-xs text-muted">
-                🎓 In the next step, you'll select your programme. Intakes: January, June, September.
+                🎓 In the next step, you&apos;ll select your programme. Intakes: January, June, September.
               </div>
 
               <div className="flex items-start gap-2">
-                <input type="checkbox" id="terms" className="mt-0.5 rounded border-border" />
+                <input type="checkbox" id="terms" required className="mt-0.5 rounded border-border" />
                 <label htmlFor="terms" className="text-xs text-muted leading-relaxed">
-                  I agree to SeaLearn's{" "}
+                  I agree to SeaLearn&apos;s{" "}
                   <Link href="/terms" className="text-ocean hover:underline">Terms of Service</Link>
                   {" "}and{" "}
                   <Link href="/privacy" className="text-ocean hover:underline">Privacy Policy (NDPR)</Link>
@@ -136,9 +149,10 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-gold text-navy font-bold py-3.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm"
+                disabled={pending}
+                className="w-full flex items-center justify-center gap-2 bg-gold text-navy font-bold py-3.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm disabled:opacity-60"
               >
-                Create Account & Continue <ArrowRight size={14} />
+                {pending ? "Creating account…" : <><span>Create Account &amp; Continue</span> <ArrowRight size={14} /></>}
               </button>
             </form>
 
@@ -149,7 +163,6 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Info */}
         <div className="mt-5 bg-white/8 border border-white/15 rounded-xl p-4 text-xs text-white/50">
           <div className="font-semibold text-white/70 mb-1">🇳🇬 Nigeria-First Application</div>
           ₦15,000 application fee payable via Paystack, Flutterwave, USSD *737# or bank transfer.

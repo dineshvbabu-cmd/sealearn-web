@@ -1,8 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { courses } from "@/lib/data";
+import { courses as staticCourses } from "@/lib/data";
 import type { CourseLevel } from "@/lib/data";
 import { ArrowRight, Search } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+
+const LEVEL_LABEL: Record<string, string> = {
+  PRE_SEA: "Pre-Sea",
+  SHORT_COURSE: "Short Course",
+  DEGREE: "Degree Level",
+  POST_COC: "Post-CoC",
+  REFRESHER: "Refresher",
+};
 
 const levelLabels: Record<CourseLevel, { label: string; className: string }> = {
   PRE_SEA: { label: "Pre-Sea", className: "bg-teal/10 text-teal" },
@@ -41,7 +50,46 @@ const levelBadge: Record<string, string> = {
   Refresher: "bg-steel/10 text-muted",
 };
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  // Fetch from DB; fall back to static data if DB is unavailable
+  let dbCourses: Array<{ slug: string; title: string; stcwRegulation: string | null; level: string; durationWeeks: number; feeNaira: number; nimasaApproved: boolean }> = [];
+  try {
+    dbCourses = await prisma.course.findMany({
+      where: { isActive: true },
+      orderBy: [{ level: "asc" }, { title: "asc" }],
+      select: { slug: true, title: true, stcwRegulation: true, level: true, durationWeeks: true, feeNaira: true, nimasaApproved: true },
+    });
+  } catch {
+    // DB unavailable — static fallback
+  }
+
+  // For the featured cards, use DB data if available otherwise fall back to static
+  const courses = dbCourses.length > 0
+    ? dbCourses.map((c) => ({
+        slug: c.slug,
+        title: c.title,
+        stcwRegulation: c.stcwRegulation ?? "—",
+        durationText: `${c.durationWeeks >= 52 ? `${Math.round(c.durationWeeks / 52)} Year${c.durationWeeks >= 104 ? "s" : ""}` : c.durationWeeks >= 4 ? `${c.durationWeeks} Weeks` : `${c.durationWeeks * 5} Days`}`,
+        feeNaira: c.feeNaira,
+        feeText: `₦${c.feeNaira.toLocaleString()}`,
+        imageUrl: "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=800&q=80",
+        tag: `${LEVEL_LABEL[c.level] ?? c.level} · ${c.stcwRegulation ?? ""}`.trim().replace(/·\s*$/, ""),
+        tagColor: c.level === "PRE_SEA" ? "bg-teal" : c.level === "SHORT_COURSE" ? "bg-gold" : c.level === "POST_COC" ? "bg-jade" : c.level === "REFRESHER" ? "bg-steel" : "bg-ocean",
+        nimasaApproved: c.nimasaApproved,
+      }))
+    : staticCourses;
+
+  // For the full table, merge DB + any extra static courses
+  const tableData = dbCourses.length > 0
+    ? dbCourses.map((c, i) => ({
+        title: c.title,
+        reg: c.stcwRegulation ?? "—",
+        duration: `${c.durationWeeks >= 52 ? `${Math.round(c.durationWeeks / 52)} yr` : c.durationWeeks >= 4 ? `${c.durationWeeks} wks` : `${c.durationWeeks * 5} days`}`,
+        level: LEVEL_LABEL[c.level] ?? c.level,
+        fee: `₦${c.feeNaira.toLocaleString()}`,
+      }))
+    : allCourses;
+
   return (
     <>
       {/* Header */}
@@ -140,7 +188,7 @@ export default function CoursesPage() {
               </tr>
             </thead>
             <tbody>
-              {allCourses.map((c, i) => (
+              {tableData.map((c, i) => (
                 <tr key={c.title} className={`border-t border-border hover:bg-surface transition-colors ${i % 2 === 1 ? "bg-surface/50" : ""}`}>
                   <td className="px-4 py-3 text-muted text-xs">{i + 1}</td>
                   <td className="px-4 py-3 font-semibold text-navy text-xs sm:text-sm">{c.title}</td>

@@ -63,7 +63,7 @@ export default function Navbar() {
               href="/auth/login"
               className="px-4 py-1.5 text-sm text-white/70 border border-white/20 rounded-full hover:border-white/50 hover:text-white transition-colors"
             >
-              Login
+              Student Login
             </Link>
             <Link
               href="/admissions"
@@ -108,7 +108,7 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className="flex-1 text-center py-2 text-sm text-white/70 border border-white/20 rounded-full"
               >
-                Login
+                Student Login
               </Link>
               <Link
                 href="/admissions"
