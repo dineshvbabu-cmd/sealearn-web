@@ -127,7 +127,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-white/25 text-xs">
           <span>© 2025 SeaLearn Nigeria Maritime Institute. All rights reserved.</span>
           <span>NIMASA · IMO STCW 2010 · NUC · ISO 9001:2015</span>
-          <Link href="/auth/admin-login" className="text-white/20 hover:text-white/50 transition-colors">
+          <Link href="/auth/admin-login" className="text-white/40 hover:text-white/70 transition-colors underline underline-offset-2">
             Staff Login
           </Link>
         </div>
