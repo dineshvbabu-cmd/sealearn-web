@@ -14,10 +14,7 @@ const steps = [
 
 export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(
-    async (_prev: { error?: string } | null, formData: FormData) => {
-      const result = await registerAction(formData);
-      return result ?? null;
-    },
+    registerAction,
     null
   );
 

@@ -6,13 +6,7 @@ import { useActionState } from "react";
 import { adminLoginAction } from "@/actions/auth";
 
 export default function AdminLoginPage() {
-  const [state, formAction, pending] = useActionState(
-    async (_prev: { error?: string } | null, formData: FormData) => {
-      const result = await adminLoginAction(formData);
-      return result ?? null;
-    },
-    null
-  );
+  const [state, formAction, pending] = useActionState(adminLoginAction, null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-steel via-navy to-ocean flex items-center justify-center px-4 py-12">
@@ -46,6 +40,7 @@ export default function AdminLoginPage() {
                   name="email"
                   type="email"
                   required
+                  autoComplete="email"
                   placeholder="admin@sealearn.ng"
                   className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-steel transition-colors"
                 />
@@ -59,6 +54,7 @@ export default function AdminLoginPage() {
                   name="password"
                   type="password"
                   required
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-steel transition-colors"
                 />

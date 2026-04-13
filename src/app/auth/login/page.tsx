@@ -6,13 +6,7 @@ import { useActionState } from "react";
 import { loginAction } from "@/actions/auth";
 
 export default function StudentLoginPage() {
-  const [state, formAction, pending] = useActionState(
-    async (_prev: { error?: string } | null, formData: FormData) => {
-      const result = await loginAction(formData);
-      return result ?? null;
-    },
-    null
-  );
+  const [state, formAction, pending] = useActionState(loginAction, null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-navy via-ocean to-teal flex items-center justify-center px-4 py-12">
@@ -46,6 +40,7 @@ export default function StudentLoginPage() {
                   name="email"
                   type="email"
                   required
+                  autoComplete="email"
                   placeholder="you@example.com"
                   className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
                 />
@@ -62,6 +57,7 @@ export default function StudentLoginPage() {
                   name="password"
                   type="password"
                   required
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
                 />
