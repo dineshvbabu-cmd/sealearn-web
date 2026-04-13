@@ -40,8 +40,17 @@ export default async function ContactContentPage() {
 
         <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4">
           <h2 className="font-bold text-navy pb-2 border-b border-border">Enquiry Email Routing</h2>
-          <p className="text-muted text-xs">All messages submitted through the Contact page form will be emailed to this address. Use a monitored inbox.</p>
-          <F name="enquiry_recipient" label="Enquiry Recipient Email *" defaultValue={cfg.enquiry_recipient} />
+          <p className="text-muted text-xs">All messages submitted through the Contact page form will be emailed to these addresses. Separate multiple emails with a comma.</p>
+          <div>
+            <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">Enquiry Recipient Email(s) *</label>
+            <input
+              name="enquiry_recipient"
+              defaultValue={cfg.enquiry_recipient}
+              placeholder="info@sealearn.edu.ng, admin@sealearn.edu.ng"
+              className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-teal"
+            />
+            <p className="text-xs text-muted mt-1.5">Example: <span className="font-mono text-steel">info@sealearn.edu.ng, d.babu@aships.co.uk</span></p>
+          </div>
         </div>
 
         <div className="flex gap-3">

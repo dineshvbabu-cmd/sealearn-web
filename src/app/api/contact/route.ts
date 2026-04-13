@@ -23,14 +23,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // Fetch the admin-configured recipient email from CMS
-    const recipient = await getSiteValue("contact", "enquiry_recipient") || "info@sealearn.edu.ng";
+    // Fetch the admin-configured recipient email(s) from CMS
+    // Supports comma-separated list: "info@sealearn.edu.ng, admin@sealearn.edu.ng"
+    const rawRecipient = await getSiteValue("contact", "enquiry_recipient") || "info@sealearn.edu.ng";
+    const recipients = rawRecipient
+      .split(",")
+      .map((e: string) => e.trim())
+      .filter((e: string) => e.includes("@"));
+
+    if (recipients.length === 0) {
+      console.warn("[contact] No valid recipient emails configured — email not sent.");
+      return NextResponse.json({ ok: true });
+    }
 
     const resend = new Resend(apiKey);
 
     await resend.emails.send({
       from: "SeaLearn Nigeria Enquiries <onboarding@resend.dev>",
-      to: [recipient],
+      to: recipients,
       replyTo: email,
       subject: `[SeaLearn Enquiry] ${subject || "Contact Form Submission"}`,
       html: `
