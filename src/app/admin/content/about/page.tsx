@@ -1,7 +1,7 @@
 import { getSiteSection } from "@/lib/site-config";
 import { saveSiteSection } from "@/actions/site-config";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 
 export default async function AboutContentPage() {
@@ -18,23 +18,63 @@ export default async function AboutContentPage() {
         <Link href="/admin/content" className="text-muted hover:text-navy"><ArrowLeft size={18} /></Link>
         <div className="flex-1">
           <h1 className="font-cinzel text-2xl font-bold text-navy">About Page</h1>
-          <p className="text-muted text-sm mt-0.5">Mission, vision, history and key statistics</p>
+          <p className="text-muted text-sm mt-0.5">Mission, vision, highlights, core values and statistics</p>
         </div>
         <a href="/about" target="_blank" className="inline-flex items-center gap-1.5 text-xs text-ocean border border-ocean/30 px-3 py-1.5 rounded-lg hover:bg-ocean/10">
           <ExternalLink size={12} /> Preview
         </a>
       </div>
 
+      {/* Leadership shortcut */}
+      <Link
+        href="/admin/about/leadership"
+        className="flex items-center gap-3 bg-navy/5 border border-navy/15 rounded-xl p-4 mb-5 hover:bg-navy/10 transition-colors"
+      >
+        <Users size={20} className="text-navy" />
+        <div className="flex-1">
+          <div className="font-bold text-navy text-sm">Leadership Team</div>
+          <p className="text-muted text-xs">Add, edit, reorder and upload photos for team members</p>
+        </div>
+        <span className="text-xs text-ocean font-semibold">Manage →</span>
+      </Link>
+
       <form action={action} className="space-y-5 max-w-3xl">
+
+        {/* Mission & Vision */}
         <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4">
           <h2 className="font-bold text-navy pb-2 border-b border-border">Mission & Vision</h2>
-          <T name="mission" label="Mission Statement" defaultValue={cfg.mission} rows={4} />
+          <F name="mission_heading" label="Section Heading" defaultValue={cfg.mission_heading} />
+          <F name="mission_image_url" label="Section Image URL" defaultValue={cfg.mission_image_url} placeholder="https://…" />
+          <T name="mission" label="Mission Statement" defaultValue={cfg.mission} rows={3} />
           <T name="vision" label="Vision Statement" defaultValue={cfg.vision} rows={3} />
-          <T name="history" label="About / History Paragraph" defaultValue={cfg.history} rows={5} />
+          <T name="history" label="About / History Paragraph" defaultValue={cfg.history} rows={4} />
         </div>
 
+        {/* Key Highlights */}
+        <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4">
+          <h2 className="font-bold text-navy pb-2 border-b border-border">Key Highlights (bullet points under mission)</h2>
+          {[1,2,3,4].map(n => (
+            <F key={n} name={`highlight_${n}`} label={`Highlight ${n}`} defaultValue={cfg[`highlight_${n}`]} placeholder="e.g. 3,200+ graduates serving worldwide" />
+          ))}
+        </div>
+
+        {/* Core Values */}
         <div className="bg-white rounded-xl border border-border shadow-sm p-6">
-          <h2 className="font-bold text-navy mb-4 pb-2 border-b border-border">Key Statistics (shown on About page)</h2>
+          <h2 className="font-bold text-navy mb-4 pb-2 border-b border-border">Core Values (6 cards)</h2>
+          <div className="space-y-5">
+            {[1,2,3,4,5,6].map(n => (
+              <div key={n} className="grid grid-cols-[60px_1fr_2fr] gap-3 items-start">
+                <F name={`value${n}_icon`} label={`#${n} Icon`} defaultValue={cfg[`value${n}_icon`]} placeholder="⚓" />
+                <F name={`value${n}_title`} label="Title" defaultValue={cfg[`value${n}_title`]} placeholder="Safety First" />
+                <F name={`value${n}_body`} label="Description" defaultValue={cfg[`value${n}_body`]} placeholder="One-line description…" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="bg-white rounded-xl border border-border shadow-sm p-6">
+          <h2 className="font-bold text-navy mb-4 pb-2 border-b border-border">Key Statistics</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {[1,2,3,4].map(n => (
               <div key={n} className="grid grid-cols-2 gap-2">
@@ -54,11 +94,11 @@ export default async function AboutContentPage() {
   );
 }
 
-function F({ name, label, defaultValue }: { name: string; label: string; defaultValue?: string }) {
+function F({ name, label, defaultValue, placeholder }: { name: string; label: string; defaultValue?: string; placeholder?: string }) {
   return (
     <div>
       <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">{label}</label>
-      <input name={name} defaultValue={defaultValue} className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-teal" />
+      <input name={name} defaultValue={defaultValue} placeholder={placeholder} className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-teal" />
     </div>
   );
 }

@@ -467,3 +467,20 @@ model CourseResource {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ─────────────────────────────────────────────────────────────
+// LEADERSHIP TEAM
+// ─────────────────────────────────────────────────────────────
+
+model LeadershipMember {
+  id         String   @id @default(cuid())
+  name       String
+  title      String
+  credential String?
+  bio        String?  @db.Text
+  imageUrl   String?
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

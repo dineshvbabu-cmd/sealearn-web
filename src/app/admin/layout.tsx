@@ -17,11 +17,13 @@ import {
   ClipboardList,
   FileEdit,
   Mail,
+  UserSquare2,
 } from "lucide-react";
 
 const navItems = [
   { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/content", icon: FileEdit, label: "Content / CMS" },
+  { href: "/admin/about/leadership", icon: UserSquare2, label: "Leadership Team" },
   { href: "/admin/courses", icon: BookOpen, label: "Courses & Fees" },
   { href: "/admin/enrolments", icon: ClipboardList, label: "Enrolments" },
   { href: "/admin/applications", icon: GraduationCap, label: "Applications" },

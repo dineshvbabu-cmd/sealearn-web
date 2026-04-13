@@ -1,16 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { leadership } from "@/lib/data";
 import { ArrowRight, CheckCircle } from "lucide-react";
-
-const values = [
-  { icon: "⚓", title: "Safety First", body: "Safety is non-negotiable — in training, at sea, and on campus." },
-  { icon: "🎯", title: "Integrity", body: "Transparent operations, honest assessments, accountable leadership." },
-  { icon: "🏆", title: "Excellence", body: "98% pass rate and industry-leading placement backed by expert faculty." },
-  { icon: "📋", title: "Compliance", body: "Fully aligned with NIMASA, IMO, STCW 2010 Manila and MLC 2006." },
-  { icon: "💡", title: "Innovation", body: "AI-powered student support, Class A simulators and digital LMS." },
-  { icon: "🤝", title: "Community", body: "A strong alumni network of 3,200+ seafarers serving globally." },
-];
+import { getSiteSection } from "@/lib/site-config";
+import { prisma } from "@/lib/prisma";
 
 const accreditations = [
   { icon: "🇳🇬", label: "NIMASA", detail: "Institutional approval — all programmes" },
@@ -21,7 +13,27 @@ const accreditations = [
   { icon: "🔱", label: "BIMCO", detail: "Baltic & International Maritime Council" },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [cfg, leaders] = await Promise.all([
+    getSiteSection("about"),
+    prisma.leadershipMember.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+  ]);
+
+  const highlights = [1,2,3,4]
+    .map(n => cfg[`highlight_${n}`])
+    .filter(Boolean);
+
+  const values = [1,2,3,4,5,6]
+    .map(n => ({
+      icon: cfg[`value${n}_icon`],
+      title: cfg[`value${n}_title`],
+      body: cfg[`value${n}_body`],
+    }))
+    .filter(v => v.title);
+
   return (
     <>
       {/* Page header */}
@@ -31,7 +43,7 @@ export default function AboutPage() {
             Module 02 · About SeaLearn
           </div>
           <h1 className="font-cinzel text-3xl sm:text-4xl font-bold leading-snug mb-3">
-            About Us & Accreditations
+            About Us &amp; Accreditations
           </h1>
           <p className="text-white/55 text-base max-w-xl">
             Nigeria's premier maritime training institute — NIMASA approved, IMO/STCW 2010 Manila
@@ -46,68 +58,68 @@ export default function AboutPage() {
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div>
             <div className="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
-              Mission & Vision
+              Mission &amp; Vision
             </div>
             <h2 className="font-cinzel text-2xl text-navy font-bold mb-4">
-              Shaping the Future of Nigerian Seafarers
+              {cfg.mission_heading}
             </h2>
             <p className="text-muted leading-relaxed mb-4">
-              <strong className="text-navy">Mission:</strong> To provide world-class, NIMASA-approved maritime education and training that equips Nigerian seafarers with the knowledge, skills and professional values to excel on vessels worldwide, contributing to Nigeria's maritime prosperity.
+              <strong className="text-navy">Mission:</strong> {cfg.mission}
             </p>
             <p className="text-muted leading-relaxed mb-6">
-              <strong className="text-navy">Vision:</strong> To be the most respected maritime training institution in West Africa — recognised by NIMASA, IMO and the global shipping industry for producing competent, safe and ethical seafarers.
+              <strong className="text-navy">Vision:</strong> {cfg.vision}
             </p>
-            <div className="space-y-2">
-              {[
-                "Lagos campus at Apapa Port Road — Africa's busiest port",
-                "3,200+ graduates serving on vessels worldwide",
-                "Class A bridge and engine room simulators",
-                "NIMASA-registered digital certificates with QR verification",
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-2 text-sm text-muted">
-                  <CheckCircle size={14} className="text-teal shrink-0 mt-0.5" />
-                  {item}
-                </div>
-              ))}
-            </div>
+            {highlights.length > 0 && (
+              <div className="space-y-2">
+                {highlights.map((item) => (
+                  <div key={item} className="flex items-start gap-2 text-sm text-muted">
+                    <CheckCircle size={14} className="text-teal shrink-0 mt-0.5" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="relative h-72 lg:h-96 rounded-2xl overflow-hidden shadow-lg">
             <Image
-              src="https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=900&q=80"
+              src={cfg.mission_image_url || "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=900&q=80"}
               alt="SeaLearn campus"
               fill
               className="object-cover"
+              unoptimized={cfg.mission_image_url?.startsWith("https://") && !cfg.mission_image_url?.includes("unsplash")}
             />
           </div>
         </div>
       </section>
 
       {/* Core Values */}
-      <section className="bg-surface py-14 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-block bg-gold/15 text-amber text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
-              Core Values
-            </div>
-            <h2 className="font-cinzel text-2xl text-navy font-bold">What We Stand For</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {values.map((v) => (
-              <div key={v.title} className="bg-white rounded-xl p-5 border-l-4 border-teal shadow-sm">
-                <div className="text-2xl mb-2">{v.icon}</div>
-                <h3 className="font-bold text-navy text-sm mb-1">{v.title}</h3>
-                <p className="text-muted text-sm leading-relaxed">{v.body}</p>
+      {values.length > 0 && (
+        <section className="bg-surface py-14 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <div className="inline-block bg-gold/15 text-amber text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+                Core Values
               </div>
-            ))}
+              <h2 className="font-cinzel text-2xl text-navy font-bold">What We Stand For</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {values.map((v) => (
+                <div key={v.title} className="bg-white rounded-xl p-5 border-l-4 border-teal shadow-sm">
+                  <div className="text-2xl mb-2">{v.icon}</div>
+                  <h3 className="font-bold text-navy text-sm mb-1">{v.title}</h3>
+                  <p className="text-muted text-sm leading-relaxed">{v.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Accreditations */}
       <section className="py-14 px-6 max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-block bg-ocean/10 text-ocean text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
-            Accreditations & Affiliations
+            Accreditations &amp; Affiliations
           </div>
           <h2 className="font-cinzel text-2xl text-navy font-bold">
             Recognised by the Best in the Industry
@@ -115,10 +127,7 @@ export default function AboutPage() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {accreditations.map((a) => (
-            <div
-              key={a.label}
-              className="bg-white border border-border rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
-            >
+            <div key={a.label} className="bg-white border border-border rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
               <div className="w-14 h-14 rounded-xl bg-surface flex items-center justify-center text-3xl shrink-0">
                 {a.icon}
               </div>
@@ -132,35 +141,46 @@ export default function AboutPage() {
       </section>
 
       {/* Leadership */}
-      <section className="bg-navy py-14 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-block bg-gold/15 border border-gold/30 text-gold text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
-              Leadership Team
-            </div>
-            <h2 className="font-cinzel text-2xl text-white font-bold">Meet Our Leadership</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-            {leadership.map((l) => (
-              <div key={l.name} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                <div className="relative w-16 h-16 mx-auto mb-3">
-                  <Image
-                    src={l.imageUrl}
-                    alt={l.name}
-                    fill
-                    className="object-cover rounded-full border-2 border-gold"
-                  />
-                </div>
-                <h3 className="text-white text-sm font-bold leading-tight">{l.name}</h3>
-                <p className="text-white/45 text-xs mt-0.5">{l.title}</p>
-                <span className="inline-block mt-2 bg-ocean text-white text-[10px] px-2 py-0.5 rounded-full">
-                  {l.credential}
-                </span>
+      {leaders.length > 0 && (
+        <section className="bg-navy py-14 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <div className="inline-block bg-gold/15 border border-gold/30 text-gold text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+                Leadership Team
               </div>
-            ))}
+              <h2 className="font-cinzel text-2xl text-white font-bold">Meet Our Leadership</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+              {leaders.map((l) => (
+                <div key={l.id} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                  <div className="relative w-16 h-16 mx-auto mb-3">
+                    {l.imageUrl ? (
+                      <Image
+                        src={l.imageUrl}
+                        alt={l.name}
+                        fill
+                        className="object-cover rounded-full border-2 border-gold"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full border-2 border-gold bg-white/10 flex items-center justify-center text-2xl">
+                        👤
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-white text-sm font-bold leading-tight">{l.name}</h3>
+                  <p className="text-white/45 text-xs mt-0.5">{l.title}</p>
+                  {l.credential && (
+                    <span className="inline-block mt-2 bg-ocean text-white text-[10px] px-2 py-0.5 rounded-full">
+                      {l.credential}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Campus gallery */}
       <section className="py-14 px-6 max-w-7xl mx-auto">
