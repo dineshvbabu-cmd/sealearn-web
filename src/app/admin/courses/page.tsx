@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Plus, Pencil, ToggleLeft, ToggleRight } from "lucide-react";
+import { Plus, Pencil, ToggleLeft, ToggleRight, Package } from "lucide-react";
 import { toggleCourseActive, deleteCourse } from "@/actions/courses";
 
 const levelLabels: Record<string, string> = {
@@ -23,12 +23,20 @@ export default async function AdminCoursesPage() {
           <h1 className="font-cinzel text-2xl font-bold text-navy">Courses &amp; Fees</h1>
           <p className="text-muted text-sm mt-1">{courses.length} programmes in the database</p>
         </div>
-        <Link
-          href="/admin/courses/new"
-          className="inline-flex items-center gap-2 bg-teal text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-teal/90 transition-colors"
-        >
-          <Plus size={14} /> Add Course
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/courses/packages"
+            className="inline-flex items-center gap-2 border border-ocean/40 text-ocean text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-ocean/10 transition-colors"
+          >
+            <Package size={14} /> Manage Packages
+          </Link>
+          <Link
+            href="/admin/courses/new"
+            className="inline-flex items-center gap-2 bg-teal text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-teal/90 transition-colors"
+          >
+            <Plus size={14} /> Add Course
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">

@@ -37,6 +37,13 @@ export default async function ContactContentPage() {
           <F name="emergency_phone" label="Emergency Phone (24/7)" defaultValue={cfg.emergency_phone} />
           <F name="google_maps_url" label="Google Maps Embed URL (optional)" defaultValue={cfg.google_maps_url} />
         </div>
+
+        <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4">
+          <h2 className="font-bold text-navy pb-2 border-b border-border">Enquiry Email Routing</h2>
+          <p className="text-muted text-xs">All messages submitted through the Contact page form will be emailed to this address. Use a monitored inbox.</p>
+          <F name="enquiry_recipient" label="Enquiry Recipient Email *" defaultValue={cfg.enquiry_recipient} />
+        </div>
+
         <div className="flex gap-3">
           <button type="submit" className="bg-teal text-white font-bold px-6 py-2.5 rounded-lg hover:bg-teal/90 text-sm">Save Changes</button>
           <Link href="/admin/content" className="border border-border text-muted px-6 py-2.5 rounded-lg hover:bg-surface text-sm">Cancel</Link>

@@ -115,6 +115,7 @@ model Course {
   enrolments       Enrolment[]
   intakeDates      IntakeDate[]
   resources        CourseResource[]
+  packages         CoursePackageCourse[]
 }
 
 model IntakeDate {
@@ -405,6 +406,33 @@ model SiteConfig {
   updatedAt DateTime @updatedAt
 
   @@unique([section, key])
+}
+
+// ─────────────────────────────────────────────────────────────
+// COURSE PACKAGES (Bundles with discounts)
+// ─────────────────────────────────────────────────────────────
+
+model CoursePackage {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  description     String?  @db.Text
+  discountPercent Int      @default(0)    // e.g. 15 = 15% off total fee
+  isActive        Boolean  @default(true)
+  badgeText       String   @default("Bundle Offer")
+  badgeColor      String   @default("bg-teal")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  courses         CoursePackageCourse[]
+}
+
+model CoursePackageCourse {
+  packageId  String
+  courseId   String
+  package    CoursePackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  course     Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@id([packageId, courseId])
 }
 
 // ─────────────────────────────────────────────────────────────

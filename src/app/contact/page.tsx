@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { getSiteSection } from "@/lib/site-config";
+import ContactForm from "@/components/ContactForm";
 
 export default async function ContactPage() {
   const cfg = await getSiteSection("contact");
@@ -30,39 +31,7 @@ export default async function ContactPage() {
         {/* Contact form */}
         <div className="bg-white rounded-2xl border border-border shadow-sm p-8">
           <h2 className="font-cinzel text-navy text-xl font-bold mb-6">Send a Message</h2>
-          <form className="space-y-4">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">Full Name</label>
-                <input type="text" placeholder="Your name" className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">Email</label>
-                <input type="email" placeholder="you@example.com" className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">Subject</label>
-              <select className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean bg-white">
-                <option>Admissions Enquiry</option>
-                <option>Course Information</option>
-                <option>Fees & Payments</option>
-                <option>Student Portal Support</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">Message</label>
-              <textarea
-                rows={5}
-                placeholder="Your message..."
-                className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean resize-none"
-              />
-            </div>
-            <button type="submit" className="w-full flex items-center justify-center gap-2 bg-gold text-navy font-bold py-3.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm">
-              Send Message <ArrowRight size={14} />
-            </button>
-          </form>
+          <ContactForm />
         </div>
 
         {/* Contact details */}

@@ -38,6 +38,7 @@ export const SITE_DEFAULTS: Record<string, Record<string, string>> = {
     office_hours: "Mon–Fri, 8:00 AM – 5:00 PM WAT",
     emergency_phone: "+234 801 999 0001",
     google_maps_url: "",
+    enquiry_recipient: "info@sealearn.edu.ng",  // all contact form emails go here
   },
   about: {
     mission: "To provide world-class, NIMASA-approved maritime education that empowers Nigerian seafarers with the knowledge, skills, and certifications needed for successful careers in the global shipping industry.",

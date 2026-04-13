@@ -35,10 +35,16 @@ const fallbackImages = [
 ];
 
 export default async function HomePage() {
-  const [cfg, dbCourses, dbNews] = await Promise.all([
+  const [cfg, dbCourses, dbNews, dbPackages] = await Promise.all([
     getSiteSection("homepage"),
     prisma.course.findMany({ where: { isActive: true }, orderBy: { level: "asc" }, take: 3 }).catch(() => []),
     prisma.post.findMany({ where: { publishedAt: { not: null } }, orderBy: { publishedAt: "desc" }, take: 3 }).catch(() => []),
+    prisma.coursePackage.findMany({
+      where: { isActive: true },
+      include: { courses: { include: { course: { select: { title: true, feeNaira: true } } } } },
+      orderBy: { discountPercent: "desc" },
+      take: 3,
+    }).catch(() => []),
   ]);
 
   // Normalize DB courses to display shape; fall back to static if empty
@@ -272,6 +278,76 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* ── COURSE PACKAGES ──────────────────────────────────────── */}
+      {dbPackages.length > 0 && (
+        <section className="bg-surface py-16 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <div className="inline-block bg-jade/10 text-jade text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+                💰 Bundle & Save
+              </div>
+              <h2 className="font-cinzel text-2xl sm:text-3xl text-navy font-bold">
+                Course Package Deals
+              </h2>
+              <p className="text-muted text-sm mt-2 max-w-xl mx-auto">
+                Enrol in bundled programmes and save. Packages are curated by our academic team for the best career outcomes.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dbPackages.map((pkg) => {
+                const totalFee = pkg.courses.reduce((s, c) => s + c.course.feeNaira, 0);
+                const savings = Math.round(totalFee * pkg.discountPercent / 100);
+                const finalFee = totalFee - savings;
+                return (
+                  <div key={pkg.id} className="bg-white rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`text-[10px] font-bold text-white px-2 py-0.5 rounded-full ${pkg.badgeColor}`}>
+                        {pkg.badgeText}
+                      </span>
+                      <span className="text-jade font-bold text-sm">{pkg.discountPercent}% off</span>
+                    </div>
+                    <h3 className="font-cinzel font-bold text-navy text-base mb-2">{pkg.title}</h3>
+                    {pkg.description && (
+                      <p className="text-muted text-xs mb-3 leading-relaxed">{pkg.description}</p>
+                    )}
+                    <div className="space-y-1.5 mb-4 flex-1">
+                      {pkg.courses.map((c) => (
+                        <div key={c.courseId} className="flex items-center gap-2 text-xs text-muted">
+                          <CheckCircle size={11} className="text-jade shrink-0" />
+                          {c.course.title}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="border-t border-border pt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <div className="text-[10px] text-muted line-through">₦{totalFee.toLocaleString()}</div>
+                          <div className="font-cinzel font-bold text-ocean text-lg">₦{finalFee.toLocaleString()}</div>
+                        </div>
+                        <div className="bg-jade/10 text-jade text-xs font-bold px-2 py-1 rounded-lg">
+                          Save ₦{savings.toLocaleString()}
+                        </div>
+                      </div>
+                      <Link
+                        href="/courses"
+                        className="w-full flex items-center justify-center gap-2 bg-gold text-navy font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm"
+                      >
+                        Select This Package <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="text-center mt-8">
+              <Link href="/courses" className="inline-flex items-center gap-1.5 text-sm text-ocean font-semibold hover:underline">
+                View all courses & build your own bundle <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── NEWS PREVIEW ──────────────────────────────────────── */}
       <section className="bg-surface py-16 px-6">

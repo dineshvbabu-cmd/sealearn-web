@@ -85,6 +85,67 @@ async function runSeed(request: Request) {
     }
   }
 
+  // Course Packages (seed after courses so IDs exist)
+  const packageSeedData = [
+    {
+      slug: "deck-officer-complete",
+      title: "Deck Officer Complete Package",
+      description: "Everything a Pre-Sea Deck Cadet needs: full cadet programme, mandatory BST, and GMDSS. Best value for aspiring deck officers.",
+      discountPercent: 15,
+      badgeText: "Best Value",
+      badgeColor: "bg-teal",
+      courseSlugs: ["pre-sea-deck-cadet", "basic-safety-training", "gmdss-general-operator"],
+    },
+    {
+      slug: "safety-essentials-bundle",
+      title: "Safety Essentials Bundle",
+      description: "All mandatory STCW safety courses in one package. Ideal for seafarers joining their first vessel or revalidating.",
+      discountPercent: 10,
+      badgeText: "Most Popular",
+      badgeColor: "bg-ocean",
+      courseSlugs: ["basic-safety-training", "ship-security-officer", "coc-revalidation-refresher"],
+    },
+    {
+      slug: "maritime-career-starter",
+      title: "Maritime Career Starter",
+      description: "Pre-Sea Engineering Cadet plus mandatory BST — the complete entry-level package for aspiring marine engineers.",
+      discountPercent: 12,
+      badgeText: "Starter Pack",
+      badgeColor: "bg-jade",
+      courseSlugs: ["pre-sea-engineering-cadet", "basic-safety-training"],
+    },
+  ];
+
+  for (const p of packageSeedData) {
+    const exists = await prisma.coursePackage.findUnique({ where: { slug: p.slug } });
+    if (!exists) {
+      // Resolve course IDs from slugs
+      const courseRecords = await prisma.course.findMany({
+        where: { slug: { in: p.courseSlugs } },
+        select: { id: true },
+      });
+      if (courseRecords.length >= 2) {
+        await prisma.coursePackage.create({
+          data: {
+            slug: p.slug,
+            title: p.title,
+            description: p.description,
+            discountPercent: p.discountPercent,
+            badgeText: p.badgeText,
+            badgeColor: p.badgeColor,
+            isActive: true,
+            courses: { create: courseRecords.map((c) => ({ courseId: c.id })) },
+          },
+        });
+        results.push(`Created package: ${p.slug}`);
+      } else {
+        results.push(`Skipped package (courses not found): ${p.slug}`);
+      }
+    } else {
+      results.push(`Package exists: ${p.slug}`);
+    }
+  }
+
   // News
   for (const n of newsSeedData) {
     const exists = await prisma.post.findUnique({ where: { slug: n.slug } });
