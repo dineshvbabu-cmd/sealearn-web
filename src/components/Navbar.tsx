@@ -72,7 +72,7 @@ export default function Navbar() {
                   }`}
                 >
                   <LayoutDashboard size={14} />
-                  My Portal
+                  Student Portal
                 </Link>
               </>
             ) : (
@@ -130,7 +130,7 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className="flex-1 text-center py-2 text-sm font-bold text-navy bg-gold rounded-full"
                 >
-                  My Portal
+                  Student Portal
                 </Link>
               ) : (
                 <>
