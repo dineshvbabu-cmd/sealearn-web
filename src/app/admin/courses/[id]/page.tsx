@@ -77,7 +77,9 @@ export default async function AdminCourseDetailPage({ params }: { params: Promis
         </div>
       ) : (
         <div className="space-y-4">
-          {course.modules.map((module) => (
+          {course.modules.map((module) => {
+            const deleteModuleAction = deleteModule.bind(null, module.id, id);
+            return (
             <div key={module.id} className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
               {/* Module header */}
               <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
@@ -107,10 +109,7 @@ export default async function AdminCourseDetailPage({ params }: { params: Promis
                   >
                     <Pencil size={11} /> Edit
                   </Link>
-                  <form action={async () => {
-                    "use server";
-                    await deleteModule(module.id, id);
-                  }}>
+                  <form action={deleteModuleAction}>
                     <button type="submit" className="inline-flex items-center gap-1 text-xs text-danger border border-danger/30 px-2.5 py-1 rounded-lg hover:bg-danger/10 transition-colors">
                       <Trash2 size={11} /> Delete
                     </button>
@@ -121,7 +120,9 @@ export default async function AdminCourseDetailPage({ params }: { params: Promis
               {/* Lessons list */}
               {module.lessons.length > 0 && (
                 <div className="divide-y divide-border/40">
-                  {module.lessons.map((lesson) => (
+                  {module.lessons.map((lesson) => {
+                    const deleteLessonAction = deleteLesson.bind(null, lesson.id, id);
+                    return (
                     <div key={lesson.id} className="flex items-center gap-3 px-6 py-2.5">
                       <div className="w-5 h-5 rounded flex items-center justify-center shrink-0">
                         {lesson.videoUrl ? (
@@ -141,15 +142,13 @@ export default async function AdminCourseDetailPage({ params }: { params: Promis
                         >
                           Edit
                         </Link>
-                        <form action={async () => {
-                          "use server";
-                          await deleteLesson(lesson.id, id);
-                        }}>
+                        <form action={deleteLessonAction}>
                           <button type="submit" className="text-xs text-danger hover:underline">Delete</button>
                         </form>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
@@ -163,7 +162,8 @@ export default async function AdminCourseDetailPage({ params }: { params: Promis
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </>

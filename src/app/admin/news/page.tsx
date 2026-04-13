@@ -43,7 +43,9 @@ export default async function AdminNewsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {posts.map((post) => (
+              {posts.map((post) => {
+                const deletePostAction = deletePost.bind(null, post.id);
+                return (
                 <tr key={post.id} className="hover:bg-surface/50 transition-colors">
                   <td className="px-5 py-3">
                     <p className="font-semibold text-navy">{post.title}</p>
@@ -67,10 +69,7 @@ export default async function AdminNewsPage() {
                       >
                         <Pencil size={12} /> Edit
                       </Link>
-                      <form action={async () => {
-                        "use server";
-                        await deletePost(post.id);
-                      }}>
+                      <form action={deletePostAction}>
                         <button
                           type="submit"
                           className="text-xs text-danger border border-danger/30 px-2.5 py-1 rounded-lg hover:bg-danger/10 transition-colors"
@@ -81,7 +80,8 @@ export default async function AdminNewsPage() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
           {posts.length === 0 && (

@@ -46,67 +46,65 @@ export default async function AdminCoursesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {courses.map((course) => (
-                <tr key={course.id} className="hover:bg-surface/50 transition-colors">
-                  <td className="px-5 py-3">
-                    <Link href={`/admin/courses/${course.id}`} className="font-semibold text-navy hover:text-ocean transition-colors">
-                      {course.title}
-                    </Link>
-                    <p className="text-xs text-muted">{course.slug}</p>
-                  </td>
-                  <td className="px-4 py-3 text-muted text-xs">{levelLabels[course.level] ?? course.level}</td>
-                  <td className="px-4 py-3 text-muted text-xs">{course.stcwRegulation ?? "—"}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-ocean">
-                    ₦{course.feeNaira.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right text-muted text-xs">
-                    ₦{course.applicationFee.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <form action={async () => {
-                      "use server";
-                      await toggleCourseActive(course.id, !course.isActive);
-                    }}>
-                      <button type="submit" title={course.isActive ? "Deactivate" : "Activate"}>
-                        {course.isActive ? (
-                          <ToggleRight size={20} className="text-jade" />
-                        ) : (
-                          <ToggleLeft size={20} className="text-muted" />
-                        )}
-                      </button>
-                    </form>
-                  </td>
-                  <td className="px-5 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/admin/courses/${course.id}/edit`}
-                        className="inline-flex items-center gap-1 text-xs text-ocean border border-ocean/30 px-2.5 py-1 rounded-lg hover:bg-ocean/10 transition-colors"
-                      >
-                        <Pencil size={12} /> Edit
+              {courses.map((course) => {
+                const toggleAction = toggleCourseActive.bind(null, course.id, !course.isActive);
+                const deleteAction = deleteCourse.bind(null, course.id);
+
+                return (
+                  <tr key={course.id} className="hover:bg-surface/50 transition-colors">
+                    <td className="px-5 py-3">
+                      <Link href={`/admin/courses/${course.id}`} className="font-semibold text-navy hover:text-ocean transition-colors">
+                        {course.title}
                       </Link>
-                      <form action={async () => {
-                        "use server";
-                        await deleteCourse(course.id);
-                      }}>
-                        <button
-                          type="submit"
-                          className="text-xs text-danger border border-danger/30 px-2.5 py-1 rounded-lg hover:bg-danger/10 transition-colors"
-                          onClick={() => {}}
-                        >
-                          Delete
+                      <p className="text-xs text-muted">{course.slug}</p>
+                    </td>
+                    <td className="px-4 py-3 text-muted text-xs">{levelLabels[course.level] ?? course.level}</td>
+                    <td className="px-4 py-3 text-muted text-xs">{course.stcwRegulation ?? "—"}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-ocean">
+                      ₦{course.feeNaira.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right text-muted text-xs">
+                      ₦{course.applicationFee.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <form action={toggleAction}>
+                        <button type="submit" title={course.isActive ? "Deactivate" : "Activate"}>
+                          {course.isActive ? (
+                            <ToggleRight size={20} className="text-jade" />
+                          ) : (
+                            <ToggleLeft size={20} className="text-muted" />
+                          )}
                         </button>
                       </form>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/courses/${course.id}/edit`}
+                          className="inline-flex items-center gap-1 text-xs text-ocean border border-ocean/30 px-2.5 py-1 rounded-lg hover:bg-ocean/10 transition-colors"
+                        >
+                          <Pencil size={12} /> Edit
+                        </Link>
+                        <form action={deleteAction}>
+                          <button
+                            type="submit"
+                            className="text-xs text-danger border border-danger/30 px-2.5 py-1 rounded-lg hover:bg-danger/10 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           {courses.length === 0 && (
             <div className="px-5 py-10 text-center text-muted text-sm">
               No courses yet.{" "}
-              <Link href="/admin/courses/new" className="text-ocean underline">Add the first one</Link> or{" "}
-              <span className="text-muted">run the seed route to import demo data.</span>
+              <Link href="/admin/courses/new" className="text-ocean underline">Add the first one</Link>{" "}
+              or run <code className="text-xs bg-surface px-1 rounded">/api/seed?secret=SEED_SECRET</code> to import demo data.
             </div>
           )}
         </div>

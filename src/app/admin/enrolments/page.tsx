@@ -49,7 +49,11 @@ export default async function AdminEnrolmentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {enrolments.map((e) => (
+              {enrolments.map((e) => {
+                const activateAction = updateEnrolmentStatus.bind(null, e.id, "ACTIVE");
+                const suspendAction = updateEnrolmentStatus.bind(null, e.id, "SUSPENDED");
+                const deleteAction = deleteEnrolment.bind(null, e.id);
+                return (
                 <tr key={e.id} className="hover:bg-surface/50 transition-colors">
                   <td className="px-5 py-3">
                     <p className="font-semibold text-navy">{e.user.name}</p>
@@ -66,29 +70,20 @@ export default async function AdminEnrolmentsPage() {
                   <td className="px-5 py-3 text-right">
                     <div className="flex items-center justify-end gap-1.5 flex-wrap">
                       {e.status !== "ACTIVE" && (
-                        <form action={async () => {
-                          "use server";
-                          await updateEnrolmentStatus(e.id, "ACTIVE");
-                        }}>
+                        <form action={activateAction}>
                           <button type="submit" className="text-xs text-jade border border-jade/30 px-2.5 py-1 rounded-lg hover:bg-jade/10 transition-colors">
                             Activate
                           </button>
                         </form>
                       )}
                       {e.status === "ACTIVE" && (
-                        <form action={async () => {
-                          "use server";
-                          await updateEnrolmentStatus(e.id, "SUSPENDED");
-                        }}>
+                        <form action={suspendAction}>
                           <button type="submit" className="text-xs text-amber border border-amber/30 px-2.5 py-1 rounded-lg hover:bg-amber/10 transition-colors">
                             Suspend
                           </button>
                         </form>
                       )}
-                      <form action={async () => {
-                        "use server";
-                        await deleteEnrolment(e.id);
-                      }}>
+                      <form action={deleteAction}>
                         <button type="submit" className="text-xs text-danger border border-danger/30 px-2.5 py-1 rounded-lg hover:bg-danger/10 transition-colors">
                           Delete
                         </button>
@@ -96,7 +91,8 @@ export default async function AdminEnrolmentsPage() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
           {enrolments.length === 0 && (
