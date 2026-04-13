@@ -17,18 +17,23 @@ export default function AdminLoginPage() {
     setError("");
 
     const fd = new FormData(e.currentTarget);
-    const result = await signIn("credentials", {
-      email: fd.get("email") as string,
-      password: fd.get("password") as string,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email: fd.get("email") as string,
+        password: fd.get("password") as string,
+        redirect: false,
+      });
 
-    if (result?.error) {
-      setError("Invalid admin credentials. Please try again.");
+      if (result?.error || result?.ok === false) {
+        setError("Invalid admin credentials. Please try again.");
+        setPending(false);
+      } else {
+        router.push("/admin/dashboard");
+        router.refresh();
+      }
+    } catch {
+      setError("Login failed. Please try again.");
       setPending(false);
-    } else {
-      router.push("/admin/dashboard");
-      router.refresh();
     }
   }
 

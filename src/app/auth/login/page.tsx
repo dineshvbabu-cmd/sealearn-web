@@ -17,18 +17,23 @@ export default function StudentLoginPage() {
     setError("");
 
     const fd = new FormData(e.currentTarget);
-    const result = await signIn("credentials", {
-      email: fd.get("email") as string,
-      password: fd.get("password") as string,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email: fd.get("email") as string,
+        password: fd.get("password") as string,
+        redirect: false,
+      });
 
-    if (result?.error) {
-      setError("Invalid email or password. Please try again.");
+      if (result?.error || result?.ok === false) {
+        setError("Invalid email or password. Please try again.");
+        setPending(false);
+      } else {
+        router.push("/portal/dashboard");
+        router.refresh();
+      }
+    } catch {
+      setError("Login failed. Please try again.");
       setPending(false);
-    } else {
-      router.push("/portal/dashboard");
-      router.refresh();
     }
   }
 
