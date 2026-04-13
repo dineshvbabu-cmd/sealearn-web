@@ -9,7 +9,7 @@ export default async function AdmissionsContentPage() {
   const action = async (fd: FormData) => {
     "use server";
     await saveSiteSection("admissions", fd);
-    redirect("/admin/content/admissions");
+    redirect("/admin/content/admissions?saved=1");
   };
 
   return (

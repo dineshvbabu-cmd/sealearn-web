@@ -30,7 +30,7 @@ export async function createModule(courseId: string, formData: FormData) {
   });
 
   revalidatePath(`/admin/courses/${courseId}`);
-  redirect(`/admin/courses/${courseId}`);
+  redirect(`/admin/courses/${courseId}?saved=1`);
 }
 
 export async function updateModule(moduleId: string, courseId: string, formData: FormData) {
@@ -48,7 +48,7 @@ export async function updateModule(moduleId: string, courseId: string, formData:
   });
 
   revalidatePath(`/admin/courses/${courseId}`);
-  redirect(`/admin/courses/${courseId}`);
+  redirect(`/admin/courses/${courseId}?saved=1`);
 }
 
 export async function deleteModule(moduleId: string, courseId: string) {
@@ -76,7 +76,7 @@ export async function createLesson(moduleId: string, courseId: string, formData:
   });
 
   revalidatePath(`/admin/courses/${courseId}`);
-  redirect(`/admin/courses/${courseId}`);
+  redirect(`/admin/courses/${courseId}?saved=1`);
 }
 
 export async function updateLesson(lessonId: string, moduleId: string, courseId: string, formData: FormData) {
@@ -94,7 +94,7 @@ export async function updateLesson(lessonId: string, moduleId: string, courseId:
   });
 
   revalidatePath(`/admin/courses/${courseId}`);
-  redirect(`/admin/courses/${courseId}`);
+  redirect(`/admin/courses/${courseId}?saved=1`);
 }
 
 export async function deleteLesson(lessonId: string, courseId: string) {

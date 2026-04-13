@@ -9,7 +9,7 @@ export default async function PortalCMSPage() {
   const action = async (fd: FormData) => {
     "use server";
     await saveSiteSection("portal", fd);
-    redirect("/admin/content/portal");
+    redirect("/admin/content/portal?saved=1");
   };
 
   return (

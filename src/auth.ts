@@ -1,8 +1,15 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
 import { prisma } from "./lib/prisma";
+
+class NoAccount extends CredentialsSignin {
+  code = "no_account";
+}
+class WrongPassword extends CredentialsSignin {
+  code = "wrong_password";
+}
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
@@ -27,14 +34,14 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           },
         });
 
-        if (!user || !user.passwordHash) return null;
+        if (!user || !user.passwordHash) throw new NoAccount();
 
         const valid = await bcrypt.compare(
           credentials.password as string,
           user.passwordHash
         );
 
-        if (!valid) return null;
+        if (!valid) throw new WrongPassword();
 
         return {
           id: user.id,

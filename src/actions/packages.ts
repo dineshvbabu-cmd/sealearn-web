@@ -34,7 +34,7 @@ export async function createPackage(formData: FormData) {
   revalidatePath("/courses");
   revalidatePath("/");
   revalidatePath("/admin/courses/packages");
-  redirect("/admin/courses/packages");
+  redirect("/admin/courses/packages?saved=1");
 }
 
 export async function updatePackage(id: string, formData: FormData) {
@@ -61,7 +61,7 @@ export async function updatePackage(id: string, formData: FormData) {
   revalidatePath("/courses");
   revalidatePath("/");
   revalidatePath("/admin/courses/packages");
-  redirect("/admin/courses/packages");
+  redirect("/admin/courses/packages?saved=1");
 }
 
 export async function deletePackage(id: string) {

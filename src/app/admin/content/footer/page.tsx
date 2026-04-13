@@ -9,7 +9,7 @@ export default async function FooterCMSPage() {
   const action = async (fd: FormData) => {
     "use server";
     await saveSiteSection("footer", fd);
-    redirect("/admin/content/footer");
+    redirect("/admin/content/footer?saved=1");
   };
 
   return (

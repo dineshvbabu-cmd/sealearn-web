@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Anchor } from "lucide-react";
+import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ export default function StudentLoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,14 +26,20 @@ export default function StudentLoginPage() {
       });
 
       if (result?.error || result?.ok === false) {
-        setError("Invalid email or password. Please try again.");
+        if (result?.code === "no_account") {
+          setError("No account found with this email address. Check your email or register below.");
+        } else if (result?.code === "wrong_password") {
+          setError("Incorrect password. Please try again or use the forgot password link.");
+        } else {
+          setError("Sign in failed. Check your email and password and try again.");
+        }
         setPending(false);
       } else {
         router.push("/portal/dashboard");
         router.refresh();
       }
     } catch {
-      setError("Login failed. Please try again.");
+      setError("Something went wrong. Please try again.");
       setPending(false);
     }
   }
@@ -81,14 +88,25 @@ export default function StudentLoginPage() {
                     Forgot password?
                   </Link>
                 </div>
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
-                />
+                <div className="relative">
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 pr-11 border border-border rounded-lg text-sm outline-none focus:border-ocean transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-navy transition-colors"
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               <button

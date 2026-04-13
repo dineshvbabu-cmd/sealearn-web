@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { auth } from "@/auth";
 import { logoutAction } from "@/actions/auth";
+import SavedToast from "@/components/SavedToast";
 import {
   LayoutDashboard,
   BookOpen,
@@ -99,6 +101,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {children}
         </div>
       </main>
+
+      {/* Global save confirmation toast */}
+      <Suspense>
+        <SavedToast />
+      </Suspense>
     </div>
   );
 }

@@ -9,7 +9,7 @@ export default async function MediaCMSPage() {
   const action = async (fd: FormData) => {
     "use server";
     await saveSiteSection("media", fd);
-    redirect("/admin/content/media");
+    redirect("/admin/content/media?saved=1");
   };
 
   return (

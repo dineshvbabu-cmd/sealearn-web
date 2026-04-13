@@ -35,7 +35,7 @@ export async function createCourse(formData: FormData) {
 
   revalidatePath("/courses");
   revalidatePath("/admin/courses");
-  redirect("/admin/courses");
+  redirect("/admin/courses?saved=1");
 }
 
 export async function updateCourse(id: string, formData: FormData) {
@@ -61,7 +61,7 @@ export async function updateCourse(id: string, formData: FormData) {
 
   revalidatePath("/courses");
   revalidatePath("/admin/courses");
-  redirect("/admin/courses");
+  redirect("/admin/courses?saved=1");
 }
 
 export async function deleteCourse(id: string) {

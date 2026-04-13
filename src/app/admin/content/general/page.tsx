@@ -9,7 +9,7 @@ export default async function GeneralSettingsPage() {
   const action = async (fd: FormData) => {
     "use server";
     await saveSiteSection("general", fd);
-    redirect("/admin/content/general");
+    redirect("/admin/content/general?saved=1");
   };
 
   return (

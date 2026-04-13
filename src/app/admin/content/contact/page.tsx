@@ -9,7 +9,7 @@ export default async function ContactContentPage() {
   const action = async (fd: FormData) => {
     "use server";
     await saveSiteSection("contact", fd);
-    redirect("/admin/content/contact");
+    redirect("/admin/content/contact?saved=1");
   };
 
   return (
