@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Phone, Info, GraduationCap, Settings2, ExternalLink, Anchor, Video, GraduationCap as PortalIcon, Layout } from "lucide-react";
+import { Home, Phone, Info, GraduationCap, Settings2, ExternalLink, Anchor, Video, Layout, Newspaper } from "lucide-react";
 
 const sections = [
   {
@@ -50,6 +50,13 @@ const sections = [
     label: "Student Portal & Timetable",
     description: "Semester dates, exam schedule, timetable notice, bank payment details",
     color: "text-ocean bg-ocean/10",
+  },
+  {
+    href: "/admin/content/news",
+    icon: Newspaper,
+    label: "News Page",
+    description: "Newsletter sign-up text, media & press contact details",
+    color: "text-jade bg-jade/10",
   },
   {
     href: "/admin/content/general",

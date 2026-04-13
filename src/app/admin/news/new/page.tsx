@@ -97,6 +97,28 @@ export default function NewPostPage() {
 
             <div>
               <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
+                Event Date <span className="text-muted font-normal normal-case">(leave blank for non-events)</span>
+              </label>
+              <input
+                name="eventDate"
+                type="datetime-local"
+                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
+                Event Venue
+              </label>
+              <input
+                name="eventVenue"
+                placeholder="e.g. Main Auditorium, Apapa Campus"
+                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
                 Publish Now?
               </label>
               <select

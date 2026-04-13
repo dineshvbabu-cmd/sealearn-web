@@ -14,6 +14,7 @@ import {
   DollarSign,
   ClipboardList,
   FileEdit,
+  Mail,
 } from "lucide-react";
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/admin/enrolments", icon: ClipboardList, label: "Enrolments" },
   { href: "/admin/applications", icon: GraduationCap, label: "Applications" },
   { href: "/admin/news", icon: Newspaper, label: "News & Events" },
+  { href: "/admin/subscribers", icon: Mail, label: "Subscribers" },
   { href: "/admin/users", icon: Users, label: "Users & Students" },
   { href: "/admin/payments", icon: DollarSign, label: "Payments" },
 ];

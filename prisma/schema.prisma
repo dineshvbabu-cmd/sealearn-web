@@ -408,6 +408,17 @@ model SiteConfig {
 }
 
 // ─────────────────────────────────────────────────────────────
+// NEWSLETTER SUBSCRIBERS
+// ─────────────────────────────────────────────────────────────
+
+model Subscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  confirmedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
 // COURSE RESOURCES (Library)
 // ─────────────────────────────────────────────────────────────
 

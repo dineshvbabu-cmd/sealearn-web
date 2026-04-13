@@ -105,6 +105,30 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
                 className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean resize-none"
               />
             </div>
+
+            <div>
+              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
+                Event Date <span className="text-muted font-normal normal-case">(events only)</span>
+              </label>
+              <input
+                name="eventDate"
+                type="datetime-local"
+                defaultValue={post.eventDate ? new Date(post.eventDate.getTime() - post.eventDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
+                Event Venue
+              </label>
+              <input
+                name="eventVenue"
+                defaultValue={post.eventVenue ?? ""}
+                placeholder="e.g. Main Auditorium, Apapa Campus"
+                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
+              />
+            </div>
           </div>
 
           <div className="flex gap-3 pt-2">

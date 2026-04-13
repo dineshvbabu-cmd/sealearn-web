@@ -28,6 +28,8 @@ export async function createPost(formData: FormData) {
       category: (formData.get("category") as string) || "news",
       authorId: session?.user?.id || null,
       publishedAt,
+      eventDate: formData.get("eventDate") ? new Date(formData.get("eventDate") as string) : null,
+      eventVenue: (formData.get("eventVenue") as string) || null,
     },
   });
 
@@ -50,6 +52,8 @@ export async function updatePost(id: string, formData: FormData) {
       imageUrl: (formData.get("imageUrl") as string) || null,
       category: (formData.get("category") as string) || "news",
       publishedAt,
+      eventDate: formData.get("eventDate") ? new Date(formData.get("eventDate") as string) : null,
+      eventVenue: (formData.get("eventVenue") as string) || null,
     },
   });
 

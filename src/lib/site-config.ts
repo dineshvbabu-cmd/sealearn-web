@@ -101,6 +101,16 @@ export const SITE_DEFAULTS: Record<string, Record<string, string>> = {
     campus_photo3_url: "",
   },
 
+  // ── NEWS PAGE ────────────────────────────────────────────────
+  news: {
+    subscribe_title: "Stay Updated",
+    subscribe_body: "Get NIMASA updates, new intake dates and events delivered to your inbox.",
+    press_title: "Media & Press Enquiries",
+    press_body: "For press releases, interview requests or event coverage, please contact our communications team.",
+    press_phone: "+234 701 234 5678",
+    press_email: "info@sealearn.edu.ng",
+  },
+
   // ── STUDENT PORTAL / TIMETABLE ────────────────────────────────
   portal: {
     welcome_message: "Welcome back to SeaLearn Nigeria Student Portal",
