@@ -3,39 +3,50 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  // Detect HTTPS (production) so we look for the __Secure- prefixed cookie.
-  // next-auth v5 uses "authjs.session-token" on HTTP and
-  // "__Secure-authjs.session-token" on HTTPS.
-  const isSecure = request.url.startsWith("https://");
+  const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 
-  const token = await getToken({
+  // Railway (and many hosts) terminate SSL at their load balancer and proxy
+  // HTTP internally, so request.url shows "http://" even though the browser
+  // connected over HTTPS and the cookie was set as "__Secure-authjs.session-token".
+  // Solution: try the secure cookie name first, then fall back to non-secure.
+  let token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
-    secureCookie: isSecure,
-    cookieName: isSecure
-      ? "__Secure-authjs.session-token"
-      : "authjs.session-token",
-    // salt must match the cookie name used when the JWT was encrypted
-    salt: isSecure
-      ? "__Secure-authjs.session-token"
-      : "authjs.session-token",
+    secret,
+    secureCookie: true,
+    cookieName: "__Secure-authjs.session-token",
+    salt: "__Secure-authjs.session-token",
   });
+
+  if (!token) {
+    token = await getToken({
+      req: request,
+      secret,
+      secureCookie: false,
+      cookieName: "authjs.session-token",
+      salt: "authjs.session-token",
+    });
+  }
 
   const { pathname } = request.nextUrl;
   const isLoggedIn = !!token;
   const role = token?.role as string | undefined;
+  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
 
-  // Admin routes — redirect to admin login, not student login
+  // Admin routes — only ADMIN / SUPER_ADMIN
   if (pathname.startsWith("/admin")) {
-    if (!isLoggedIn || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
+    if (!isLoggedIn || !isAdmin) {
       return NextResponse.redirect(new URL("/auth/admin-login", request.url));
     }
   }
 
-  // Portal routes — redirect to student login
+  // Portal routes — must be logged in AND not an admin account
   if (pathname.startsWith("/portal")) {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+    // Admins should use the admin panel, not the student portal
+    if (isAdmin) {
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
   }
 

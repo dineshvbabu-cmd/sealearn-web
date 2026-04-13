@@ -21,6 +21,10 @@ export default async function PortalLayout({ children }: { children: React.React
   const session = await auth();
   if (!session) redirect("/auth/login");
 
+  // Admin accounts belong in the admin panel, not the student portal
+  const role = (session.user as { role?: string })?.role;
+  if (role === "ADMIN" || role === "SUPER_ADMIN") redirect("/admin/dashboard");
+
   const user = session.user;
   const initials = user?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() ?? "S";
 
