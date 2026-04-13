@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Phone, Info, GraduationCap, Settings2, ExternalLink } from "lucide-react";
+import { Home, Phone, Info, GraduationCap, Settings2, ExternalLink, Anchor, Video, GraduationCap as PortalIcon, Layout } from "lucide-react";
 
 const sections = [
   {
@@ -8,13 +8,6 @@ const sections = [
     label: "Homepage",
     description: "Hero title, subtitle, CTA buttons, stats, and feature highlights",
     color: "text-ocean bg-ocean/10",
-  },
-  {
-    href: "/admin/content/contact",
-    icon: Phone,
-    label: "Contact Page",
-    description: "Address, phone number, email, office hours, emergency contact",
-    color: "text-jade bg-jade/10",
   },
   {
     href: "/admin/content/about",
@@ -29,6 +22,34 @@ const sections = [
     label: "Admissions Page",
     description: "Application steps, deadline, intake dates, requirements",
     color: "text-gold bg-gold/10",
+  },
+  {
+    href: "/admin/content/contact",
+    icon: Phone,
+    label: "Contact Page",
+    description: "Address, phone number, email, office hours, emergency contact",
+    color: "text-jade bg-jade/10",
+  },
+  {
+    href: "/admin/content/footer",
+    icon: Anchor,
+    label: "Footer & Social Media",
+    description: "LinkedIn, X (Twitter), Facebook, Instagram, YouTube links and footer text",
+    color: "text-steel bg-steel/10",
+  },
+  {
+    href: "/admin/content/media",
+    icon: Video,
+    label: "Videos & Images",
+    description: "Promotional videos, campus tour, testimonials, hero & about images",
+    color: "text-amber bg-amber/10",
+  },
+  {
+    href: "/admin/content/portal",
+    icon: Layout,
+    label: "Student Portal & Timetable",
+    description: "Semester dates, exam schedule, timetable notice, bank payment details",
+    color: "text-ocean bg-ocean/10",
   },
   {
     href: "/admin/content/general",

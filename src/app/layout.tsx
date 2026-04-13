@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
+import Providers from "@/components/Providers";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel-var",
@@ -36,10 +37,12 @@ export default function RootLayout({
       className={`${cinzel.variable} ${nunitoSans.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <ChatWidget />
+        <Providers>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <ChatWidget />
+        </Providers>
       </body>
     </html>
   );

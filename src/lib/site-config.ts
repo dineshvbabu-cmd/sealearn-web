@@ -66,6 +66,59 @@ export const SITE_DEFAULTS: Record<string, Record<string, string>> = {
     step4_title: "Offer Letter",
     step4_body: "Successful applicants receive a NIMASA-registered offer letter within 5 working days.",
   },
+
+  // ── FOOTER ────────────────────────────────────────────────────
+  footer: {
+    tagline: "Nigeria Maritime Training Institute · NIMASA Approved · Est. 2000",
+    copyright: "© 2025 SeaLearn Nigeria Maritime Institute. All rights reserved.",
+    linkedin_url: "",
+    twitter_url: "",
+    facebook_url: "",
+    instagram_url: "",
+    youtube_url: "",
+    address_short: "Apapa Port Road, Lagos, Nigeria",
+    phone: "+234 701 234 5678",
+    email: "info@sealearn.edu.ng",
+  },
+
+  // ── MEDIA (Videos & Images) ───────────────────────────────────
+  media: {
+    promo_video_url: "",
+    campus_tour_url: "",
+    testimonial1_url: "",
+    testimonial1_name: "",
+    testimonial1_role: "",
+    testimonial2_url: "",
+    testimonial2_name: "",
+    testimonial2_role: "",
+    testimonial3_url: "",
+    testimonial3_name: "",
+    testimonial3_role: "",
+    hero_image_url: "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=1600&q=80",
+    about_image_url: "https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=800&q=80",
+    campus_photo1_url: "",
+    campus_photo2_url: "",
+    campus_photo3_url: "",
+  },
+
+  // ── STUDENT PORTAL / TIMETABLE ────────────────────────────────
+  portal: {
+    welcome_message: "Welcome back to SeaLearn Nigeria Student Portal",
+    semester: "2025/2026 Second Semester",
+    semester_start: "January 2026",
+    semester_end: "June 2026",
+    timetable_notice: "Your timetable is updated at the start of each semester. Please check with your instructor for the latest schedule.",
+    next_exam_date: "",
+    exam_venue: "SeaLearn Nigeria, Apapa Campus",
+    support_email: "support@sealearn.edu.ng",
+    support_phone: "+234 701 234 5678",
+    payment_bank: "First Bank of Nigeria",
+    payment_account_name: "SeaLearn Nigeria Limited",
+    payment_account_number: "2034567890",
+    payment_sort_code: "011151003",
+    course_content_notice: "Course materials are updated regularly. Contact your instructor if you have questions about module content.",
+    library_notice: "The digital library is available 24/7. Download resources for offline study.",
+  },
 };
 
 type SectionKey = keyof typeof SITE_DEFAULTS;

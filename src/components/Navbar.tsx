@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Anchor, ChevronDown } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Menu, X, Anchor, LayoutDashboard } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -12,12 +13,14 @@ const navLinks = [
   { href: "/admissions", label: "Admissions" },
   { href: "/news", label: "News" },
   { href: "/contact", label: "Contact" },
-  { href: "/portal/dashboard", label: "Portal" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  const isLoggedIn = status === "authenticated" && !!session?.user;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -30,9 +33,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Anchor className="text-gold" size={22} />
             <div>
-              <div
-                className="text-gold font-cinzel text-sm font-bold tracking-widest leading-none"
-              >
+              <div className="text-gold font-cinzel text-sm font-bold tracking-widest leading-none">
                 SEALEARN
               </div>
               <div className="text-white/30 text-[10px] tracking-wide leading-none mt-0.5">
@@ -58,20 +59,38 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Auth buttons */}
+          {/* Auth buttons — desktop */}
           <div className="hidden md:flex items-center gap-2">
-            <Link
-              href="/auth/login"
-              className="px-4 py-1.5 text-sm text-white/70 border border-white/20 rounded-full hover:border-white/50 hover:text-white transition-colors"
-            >
-              Student Login
-            </Link>
-            <Link
-              href="/admissions"
-              className="px-4 py-1.5 text-sm font-bold text-navy bg-gold rounded-full hover:bg-yellow-400 transition-colors"
-            >
-              Apply Now
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/portal/dashboard"
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold rounded-full transition-colors ${
+                    pathname.startsWith("/portal")
+                      ? "bg-gold text-navy"
+                      : "bg-gold/15 text-gold border border-gold/30 hover:bg-gold/25"
+                  }`}
+                >
+                  <LayoutDashboard size={14} />
+                  My Portal
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="px-4 py-1.5 text-sm text-white/70 border border-white/20 rounded-full hover:border-white/50 hover:text-white transition-colors"
+                >
+                  Student Login
+                </Link>
+                <Link
+                  href="/admissions"
+                  className="px-4 py-1.5 text-sm font-bold text-navy bg-gold rounded-full hover:bg-yellow-400 transition-colors"
+                >
+                  Apply Now
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -103,21 +122,34 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
             <div className="flex gap-2 mt-3 pt-3 border-t border-white/10">
-              <Link
-                href="/auth/login"
-                onClick={() => setMobileOpen(false)}
-                className="flex-1 text-center py-2 text-sm text-white/70 border border-white/20 rounded-full"
-              >
-                Student Login
-              </Link>
-              <Link
-                href="/admissions"
-                onClick={() => setMobileOpen(false)}
-                className="flex-1 text-center py-2 text-sm font-bold text-navy bg-gold rounded-full"
-              >
-                Apply Now
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  href="/portal/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex-1 text-center py-2 text-sm font-bold text-navy bg-gold rounded-full"
+                >
+                  My Portal
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex-1 text-center py-2 text-sm text-white/70 border border-white/20 rounded-full"
+                  >
+                    Student Login
+                  </Link>
+                  <Link
+                    href="/admissions"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex-1 text-center py-2 text-sm font-bold text-navy bg-gold rounded-full"
+                  >
+                    Apply Now
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

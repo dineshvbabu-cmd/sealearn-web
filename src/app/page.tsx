@@ -251,10 +251,12 @@ export default async function HomePage() {
                 <h3 className="font-bold text-navy text-sm leading-tight mb-1">{course.title}</h3>
                 <p className="text-muted text-xs mb-3">{course.durationText} · NIMASA Approved</p>
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-ocean">{course.feeText}</span>
-                  <span className="inline-flex items-center gap-1 bg-navy text-gold text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    ⚓ {course.stcwRegulation}
-                  </span>
+                  <span className="text-xs text-ocean font-semibold">View Programme →</span>
+                  {course.stcwRegulation && (
+                    <span className="inline-flex items-center gap-1 bg-navy text-gold text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      ⚓ {course.stcwRegulation}
+                    </span>
+                  )}
                 </div>
               </div>
             </Link>

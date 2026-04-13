@@ -59,11 +59,19 @@ export default async function LMSCoursesPage() {
           const completedModules = enrolment.progress.filter((p) => p.completedAt !== null).length;
           const progressPercent = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
 
+          const cardHref = enrolment.status === "PENDING_PAYMENT"
+            ? "/portal/fees"
+            : `/portal/courses/${course.slug}`;
+
           return (
             <Link
               key={enrolment.id}
-              href={`/portal/courses/${course.slug}`}
-              className="bg-white rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow group p-5 flex flex-col"
+              href={cardHref}
+              className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow group p-5 flex flex-col ${
+                enrolment.status === "PENDING_PAYMENT"
+                  ? "border-amber/30 bg-amber/5"
+                  : "border-border"
+              }`}
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-10 h-10 rounded-lg bg-teal/10 flex items-center justify-center shrink-0">
@@ -97,7 +105,7 @@ export default async function LMSCoursesPage() {
                 </div>
               )}
 
-              {totalModules === 0 && (
+              {totalModules === 0 && enrolment.status === "ACTIVE" && (
                 <div className="mt-auto flex items-center gap-1 text-xs text-muted">
                   <Clock size={12} />
                   Course content coming soon
@@ -111,10 +119,29 @@ export default async function LMSCoursesPage() {
                 </div>
               )}
 
-              <div className="mt-3 flex items-center gap-1 text-ocean text-xs font-semibold group-hover:gap-2 transition-all">
-                <PlayCircle size={12} />
-                Continue Learning
-              </div>
+              {enrolment.status === "PENDING_PAYMENT" && (
+                <div className="mt-auto space-y-2">
+                  <div className="text-xs text-amber font-semibold flex items-center gap-1">
+                    💳 Payment required to access content
+                  </div>
+                  <div className="text-[10px] text-muted">
+                    Outstanding: ₦{(enrolment.totalFee - enrolment.amountPaid).toLocaleString()}
+                  </div>
+                </div>
+              )}
+
+              {enrolment.status === "ACTIVE" && (
+                <div className="mt-3 flex items-center gap-1 text-ocean text-xs font-semibold group-hover:gap-2 transition-all">
+                  <PlayCircle size={12} />
+                  Continue Learning
+                </div>
+              )}
+
+              {enrolment.status === "PENDING_PAYMENT" && (
+                <div className="mt-3 flex items-center gap-1 text-amber text-xs font-bold">
+                  💳 Pay Now
+                </div>
+              )}
             </Link>
           );
         })}
