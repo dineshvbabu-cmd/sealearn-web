@@ -1,5 +1,3 @@
-// Edge-compatible route guard — runs before every request matching the config.
-// Uses next-auth/jwt getToken to read the JWT directly from cookies (no Prisma/bcrypt).
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -14,14 +12,14 @@ export async function proxy(request: NextRequest) {
   const isLoggedIn = !!token;
   const role = token?.role as string | undefined;
 
-  // Admin routes — must be ADMIN or SUPER_ADMIN
+  // Admin routes — redirect to ADMIN login, not student login
   if (pathname.startsWith("/admin")) {
     if (!isLoggedIn || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+      return NextResponse.redirect(new URL("/auth/admin-login", request.url));
     }
   }
 
-  // Portal routes — must be logged in
+  // Portal routes — redirect to student login
   if (pathname.startsWith("/portal")) {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
