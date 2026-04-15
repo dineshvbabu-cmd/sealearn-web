@@ -32,7 +32,6 @@ export default async function AdmissionsContentPage() {
           <div className="grid sm:grid-cols-3 gap-4">
             <F name="deadline" label="Application Deadline" defaultValue={cfg.deadline} />
             <F name="intake_date" label="Intake / Start Date" defaultValue={cfg.intake_date} />
-            <F name="application_fee" label="Application Fee" defaultValue={cfg.application_fee} />
           </div>
         </div>
 

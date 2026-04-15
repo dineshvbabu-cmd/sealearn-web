@@ -23,7 +23,6 @@ export async function createCourse(formData: FormData) {
       level: formData.get("level") as CourseLevel,
       durationWeeks: Number(formData.get("durationWeeks")),
       feeNaira: 0,
-      applicationFee: 0,
       description: formData.get("description") as string,
       eligibility: formData.get("eligibility") as string,
       outcomes: formData.get("outcomes") as string,

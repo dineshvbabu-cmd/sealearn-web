@@ -119,19 +119,6 @@ export default function NewCoursePage() {
 
             <div>
               <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
-                Application Fee (₦)
-              </label>
-              <input
-                name="applicationFee"
-                type="number"
-                defaultValue={15000}
-                min={0}
-                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
                 NIMASA Ref Number
               </label>
               <input

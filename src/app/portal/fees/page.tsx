@@ -1,7 +1,6 @@
 import { CheckCircle, AlertCircle, Download, CreditCard } from "lucide-react";
 
 const transactions = [
-  { date: "15 Jan 2026", description: "Application Fee — Pre-Sea Deck Cadet", amount: 15000, status: "paid", ref: "SL-2026-00142" },
   { date: "20 Jan 2026", description: "Tuition — Semester 1 (50%)", amount: 240000, status: "paid", ref: "SL-2026-00198" },
   { date: "01 Apr 2026", description: "Tuition — Semester 2 (50%)", amount: 240000, status: "due", ref: null },
   { date: "20 Jan 2026", description: "NIMASA Registration Fee", amount: 25000, status: "paid", ref: "SL-2026-00199" },

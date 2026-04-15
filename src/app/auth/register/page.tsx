@@ -162,7 +162,7 @@ export default function RegisterPage() {
 
         <div className="mt-5 bg-white/8 border border-white/15 rounded-xl p-4 text-xs text-white/50">
           <div className="font-semibold text-white/70 mb-1">🇳🇬 Nigeria-First Application</div>
-          ₦15,000 application fee payable via Paystack, Flutterwave, USSD *737# or bank transfer.
+          No application fee. Submit your documents, receive a personalised fee quote, and pay only after acceptance.
           Your data is stored securely in compliance with the NDPR.
         </div>
       </div>

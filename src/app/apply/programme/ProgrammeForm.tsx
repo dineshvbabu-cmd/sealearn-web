@@ -134,7 +134,7 @@ export default function ProgrammeForm({ courses, defaultCourseId, defaultIntakeD
       )}
 
       <div className="bg-surface border border-border rounded-lg p-3 text-xs text-muted">
-        💡 Application fee of ₦15,000 is payable after your documents are reviewed. No payment required at this stage.
+        💡 No upfront payment required. Submit your documents and receive a personalised fee quote after review.
       </div>
 
       <button
