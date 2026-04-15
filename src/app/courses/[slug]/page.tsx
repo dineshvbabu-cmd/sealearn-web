@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { courses } from "@/lib/data";
-import { CheckCircle, Clock, ArrowRight, ArrowLeft, Mail, Phone } from "lucide-react";
+import { CheckCircle, Clock, ArrowRight, ArrowLeft, Phone } from "lucide-react";
+import RequestQuoteButton from "@/components/RequestQuoteButton";
 
 export async function generateStaticParams() {
   return courses.map((c) => ({ slug: c.slug }));
@@ -58,12 +59,7 @@ export default async function CourseDetailPage({
             >
               Apply Now <ArrowRight size={16} />
             </Link>
-            <a
-              href={`/contact?subject=Fee+Enquiry:+${encodeURIComponent(course.title)}`}
-              className="inline-flex items-center gap-2 bg-white/15 text-white border border-white/30 font-semibold px-6 py-3 rounded-full hover:bg-white/25 transition-colors"
-            >
-              <Mail size={15} /> Request a Quote
-            </a>
+            <RequestQuoteButton courseTitle={course.title} variant="hero" />
           </div>
         </div>
       </div>
@@ -137,12 +133,7 @@ export default async function CourseDetailPage({
             <p className="text-white/55 text-xs mb-4 leading-relaxed">
               Course fees are tailored to your background and intake date. Request a personalised fee schedule with no obligation.
             </p>
-            <a
-              href={`mailto:admissions@sealearn.edu.ng?subject=Fee Enquiry: ${course.title}&body=Hello,%0A%0AI am interested in the ${course.title} programme and would like to request a fee schedule.%0A%0AMy details:%0AName:%0APhone:%0APreferred Intake:%0A%0AThank you.`}
-              className="flex items-center justify-center gap-2 bg-gold text-navy font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm w-full mb-2"
-            >
-              <Mail size={14} /> Request a Quote by Email
-            </a>
+            <RequestQuoteButton courseTitle={course.title} variant="sidebar" />
             <a
               href="tel:+2347012345678"
               className="flex items-center justify-center gap-2 bg-white/10 text-white font-semibold py-2.5 rounded-lg hover:bg-white/20 transition-colors text-sm w-full"

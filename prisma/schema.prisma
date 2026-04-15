@@ -20,6 +20,7 @@ enum Role {
   CADET
   STUDENT
   INSTRUCTOR
+  LMS_ADMIN
   REGISTRAR
   ADMIN
   SUPER_ADMIN
@@ -89,26 +90,33 @@ enum CourseLevel {
   REFRESHER
 }
 
+enum RegistrationFormType {
+  GOOGLE_FORM
+  MS_FORM
+}
+
 model Course {
-  id               String      @id @default(cuid())
-  slug             String      @unique
-  title            String
-  stcwRegulation   String?     // e.g. "VI/1", "II/1"
-  imoModelCourse   String?
-  level            CourseLevel
-  durationWeeks    Int
-  feeNaira         Int
-  applicationFee   Int         @default(15000)
-  description      String      @db.Text
-  eligibility      String      @db.Text
-  outcomes         String      @db.Text
-  isActive         Boolean     @default(true)
-  nimasaApproved   Boolean     @default(true)
-  nimasaRefNumber  String?
-  instructorId     String?
-  instructor       User?       @relation("InstructorCourses", fields: [instructorId], references: [id])
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  id                   String               @id @default(cuid())
+  slug                 String               @unique
+  title                String
+  stcwRegulation       String?              // e.g. "VI/1", "II/1"
+  imoModelCourse       String?
+  level                CourseLevel
+  durationWeeks        Int
+  feeNaira             Int                  @default(0)
+  applicationFee       Int                  @default(0)
+  description          String               @db.Text
+  eligibility          String               @db.Text
+  outcomes             String               @db.Text
+  isActive             Boolean              @default(true)
+  nimasaApproved       Boolean              @default(true)
+  nimasaRefNumber      String?
+  registrationFormType RegistrationFormType @default(MS_FORM)
+  registrationFormUrl  String?              // link to Google/MS form
+  instructorId         String?
+  instructor           User?                @relation("InstructorCourses", fields: [instructorId], references: [id])
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
 
   modules          Module[]
   applications     Application[]
@@ -116,6 +124,7 @@ model Course {
   intakeDates      IntakeDate[]
   resources        CourseResource[]
   packages         CoursePackageCourse[]
+  priceRequests    PriceRequest[]
 }
 
 model IntakeDate {
@@ -230,6 +239,9 @@ model Enrolment {
   startDate      DateTime?
   endDate        DateTime?
   completedAt    DateTime?
+  stepLmsUrl     String?         // deep link to Step LMS course
+  lmsActive      Boolean         @default(false)
+  lmsRevokedAt   DateTime?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
@@ -512,6 +524,38 @@ model Waitlist {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
+
+// ─────────────────────────────────────────────────────────────
+// PRICE REQUESTS
+// ─────────────────────────────────────────────────────────────
+
+enum PriceRequestStatus {
+  NEW
+  REPLIED
+  CLOSED
+}
+
+model PriceRequest {
+  id        String             @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  courseId  String?
+  course    Course?            @relation(fields: [courseId], references: [id])
+  message   String?            @db.Text
+  status    PriceRequestStatus @default(NEW)
+  repliedAt DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// LMS INTEGRATION
+// ─────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────
 // LEADERSHIP TEAM

@@ -1,20 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { courses as staticCourses } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import CoursePicker from "@/components/CoursePicker";
-
-const LEVEL_LABEL: Record<string, string> = {
-  PRE_SEA: "Pre-Sea", SHORT_COURSE: "Short Course",
-  DEGREE: "Degree Level", POST_COC: "Post-CoC", REFRESHER: "Refresher",
-};
-
-const levelBadge: Record<string, string> = {
-  "Pre-Sea": "bg-teal/10 text-teal", "Short Course": "bg-gold/15 text-amber",
-  "Degree Level": "bg-ocean/10 text-ocean", "Post-CoC": "bg-jade/10 text-jade",
-  Refresher: "bg-steel/10 text-muted",
-};
+import CourseSearch from "@/components/CourseSearch";
 
 export default async function CoursesPage() {
   const [dbCourses, dbPackages] = await Promise.all([
@@ -46,21 +33,19 @@ export default async function CoursesPage() {
         durationWeeks: c.durationWeeks,
         durationText: durationText(c.durationWeeks),
         feeNaira: c.feeNaira,
-        feeText: `₦${c.feeNaira.toLocaleString()}`,
         imageUrl: "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=800&q=80",
         tagColor: c.level === "PRE_SEA" ? "bg-teal" : c.level === "SHORT_COURSE" ? "bg-gold" : c.level === "POST_COC" ? "bg-jade" : c.level === "REFRESHER" ? "bg-steel" : "bg-ocean",
         nimasaApproved: c.nimasaApproved,
       }))
-    : staticCourses.map((c) => ({ ...c, id: c.slug, level: "SHORT_COURSE", durationText: c.durationText ?? "", durationWeeks: 4, stcwRegulation: "—", feeNaira: 0 }));
-
-  // Group by level for display
-  type CourseItem = typeof courses[number];
-  const LEVEL_ORDER = ["PRE_SEA", "DEGREE", "SHORT_COURSE", "POST_COC", "REFRESHER"];
-  const coursesByLevel = LEVEL_ORDER.reduce<Record<string, CourseItem[]>>((acc, lvl) => {
-    const grp = courses.filter((c) => c.level === lvl);
-    if (grp.length) acc[lvl] = grp;
-    return acc;
-  }, {});
+    : staticCourses.map((c) => ({
+        ...c,
+        id: c.slug,
+        level: "SHORT_COURSE",
+        durationText: c.durationText ?? "",
+        durationWeeks: 4,
+        stcwRegulation: "—",
+        feeNaira: 0,
+      }));
 
   const packages = dbPackages.map((p) => ({
     id: p.id,
@@ -73,7 +58,6 @@ export default async function CoursesPage() {
     courseIds: p.courses.map((c) => c.courseId),
   }));
 
-  // For the picker, use full course objects
   const pickerCourses = courses.map((c) => ({
     id: c.id,
     slug: c.slug,
@@ -96,7 +80,8 @@ export default async function CoursesPage() {
             STCW & Pre-Sea Course Catalogue
           </h1>
           <p className="text-white/55 text-base max-w-2xl">
-            Select courses below to build your programme. Bundle qualifying courses together for automatic discounts.
+            {courses.length} programmes across {new Set(courses.map((c) => c.level)).size} categories.
+            Search, filter by level or duration, and request a personalised fee quote.
           </p>
         </div>
       </div>
@@ -115,59 +100,13 @@ export default async function CoursesPage() {
                 </span>
               ))}
             </span>
-            <span className="text-muted text-xs">↓ Select courses below to activate</span>
           </div>
         </div>
       )}
 
-      {/* Courses grouped by category */}
+      {/* Course search + grid */}
       <section className="py-10 px-6 max-w-7xl mx-auto space-y-12">
-        {Object.entries(coursesByLevel).map(([lvl, grp]) => (
-          <div key={lvl}>
-            <div className="flex items-center gap-3 mb-5">
-              <div className={`inline-block text-[11px] font-bold px-3 py-1 rounded-full text-white ${grp[0].tagColor}`}>
-                {LEVEL_LABEL[lvl] ?? lvl.replace("_", " ")}
-              </div>
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted">{grp.length} programme{grp.length > 1 ? "s" : ""}</span>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {grp.map((course) => (
-                <Link
-                  key={course.slug}
-                  href={`/courses/${course.slug}`}
-                  className="bg-white rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-all group"
-                >
-                  <div className="relative h-40 overflow-hidden">
-                    <Image
-                      src={course.imageUrl}
-                      alt={course.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {course.nimasaApproved && (
-                      <div className="absolute top-2 right-2 bg-jade text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
-                        NIMASA ✓
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-navy text-sm leading-tight mb-1">{course.title}</h3>
-                    <p className="text-muted text-xs mb-3">{course.durationText}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-ocean font-semibold group-hover:text-teal transition-colors">View details →</span>
-                      {course.stcwRegulation && course.stcwRegulation !== "—" && (
-                        <span className="inline-flex items-center gap-1 bg-navy text-gold text-[10px] font-bold px-2 py-0.5 rounded-full">
-                          ⚓ {course.stcwRegulation}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
+        <CourseSearch courses={courses} />
 
         {/* Multi-select course picker */}
         {packages.length > 0 && (

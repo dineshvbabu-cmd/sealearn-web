@@ -20,6 +20,8 @@ import {
   UserSquare2,
   Activity,
   Clock,
+  BadgeDollarSign,
+  Video,
 } from "lucide-react";
 
 type NavItem = { href: string; icon: React.ElementType; label: string; roles?: string[] };
@@ -32,6 +34,7 @@ const navItems: NavItem[] = [
   { href: "/admin/enrolments", icon: ClipboardList, label: "Enrolments" },
   { href: "/admin/applications", icon: GraduationCap, label: "Applications" },
   { href: "/admin/waitlist", icon: Clock, label: "Waitlist" },
+  { href: "/admin/price-requests", icon: BadgeDollarSign, label: "Price Requests" },
   { href: "/admin/news", icon: Newspaper, label: "News & Events", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/subscribers", icon: Mail, label: "Subscribers", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/users", icon: Users, label: "Users & Students" },

@@ -1,0 +1,33 @@
+LMS Links current to be available in the website from steps - 
+Moodle - Open source
+Faculty - 6 months period
+Old website contents to be in the latest website.
+Admin to be segregated with user role access per page
+Register first as students - Validation documents to be verified before registration
+Remove fees and inside the pages - Request price option, upload application forms
+Fees to be through the email - payment links to be through them - Auto replied with email
+Validations on email address
+Registration to be through proper documents upload and then quote for the course
+
+Course payments divert to student portal
+
+Mock assessments, academic, kPI for students
+
+View on student portal, also visible to staff - pages to be controlled for courses based on the enrolment - Only until the course sections - auto removal for the users upon course completion
+Staff portal to have similar training material - ---///
+Help materials for students
+Dummy student portal logins - Student view and staff view conflicts update
+- Read only view from staff for student portal
+- Super admin for all students portal for staff
+Activity feed for any changes on the admin page for auditing.
+Master activity, 	
+Access right control for the pages, edit and view
+
+Formal waitlist - to particular batch assignment and course fees discussion - communication during waitlist between staff and student
+Help material for admin and all portals help them understand the page workflow
+No application fee
+Design assistant to know - immediately of chat bot
+LMS admin separate right control
+
+Download and export to mail
+Formatting of courses - segregation of courses
