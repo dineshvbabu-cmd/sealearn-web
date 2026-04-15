@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Anchor, X, Send, GripVertical } from "lucide-react";
+import { MessageCircle, X, Send, GripVertical } from "lucide-react";
 
 type Message = { role: "user" | "assistant" | "typing"; content: string };
 
 const QUICK_QUESTIONS = [
-  "Pre-Sea Deck course fees?",
   "How do I apply?",
   "What STCW courses do you offer?",
   "BST course details?",
+  "What documents do I need?",
 ];
 
 const WELCOME: Message = {
   role: "assistant",
   content:
-    "Hello! 👋 I'm the SeaLearn Nigeria assistant. I can help you with STCW courses, fees (₦ Naira), admissions, and how to use the student portal.\n\nWhat would you like to know?",
+    "Hello! 👋 I'm the SeaLearn Nigeria Help Assistant. I can help you with STCW courses, admissions, registration, and how to use the student portal.\n\nWhat would you like to know?",
 };
 
 export default function ChatWidget() {
@@ -24,6 +24,17 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [showQuick, setShowQuick] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [badgeVisible, setBadgeVisible] = useState(false);
+
+  // Show red dot on first visit for 30 seconds
+  useEffect(() => {
+    const seen = localStorage.getItem("chat_opened");
+    if (!seen) {
+      setBadgeVisible(true);
+      const t = setTimeout(() => setBadgeVisible(false), 30000);
+      return () => clearTimeout(t);
+    }
+  }, []);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Draggable position — null means use default CSS (bottom-6 right-6)
@@ -160,11 +171,11 @@ export default function ChatWidget() {
           {/* Header */}
           <div className="bg-gradient-to-r from-navy to-ocean px-4 py-3 flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-gold flex items-center justify-center shrink-0">
-              <Anchor size={16} className="text-navy" />
+              <MessageCircle size={16} className="text-navy" fill="currentColor" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-white text-sm font-bold">SeaLearn Assistant</div>
-              <div className="text-white/60 text-[11px]">Powered by Claude AI · Online</div>
+              <div className="text-white text-sm font-bold">SeaLearn Help</div>
+              <div className="text-white/60 text-[11px]">Ask about courses, registration or admissions</div>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -244,11 +255,21 @@ export default function ChatWidget() {
           <GripVertical size={16} />
         </div>
         <button
-          onClick={() => setOpen(!open)}
-          className="w-14 h-14 rounded-full bg-gradient-to-br from-navy to-ocean shadow-xl flex items-center justify-center text-gold hover:scale-105 transition-transform"
-          title="SeaLearn Assistant"
+          onClick={() => {
+            setOpen(!open);
+            setBadgeVisible(false);
+            localStorage.setItem("chat_opened", "1");
+          }}
+          className="relative flex flex-col items-center gap-0.5 group"
+          title="SeaLearn Help Assistant"
         >
-          {open ? <X size={22} /> : <Anchor size={22} />}
+          <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-navy to-ocean shadow-xl flex items-center justify-center text-gold hover:scale-105 transition-transform ${!open ? "animate-pulse-slow" : ""}`}>
+            {open ? <X size={22} /> : <MessageCircle size={22} fill="currentColor" />}
+          </div>
+          {!open && <span className="text-white text-[10px] font-bold tracking-wide drop-shadow">Help</span>}
+          {badgeVisible && !open && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white" />
+          )}
         </button>
       </div>
     </div>

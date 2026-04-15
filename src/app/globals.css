@@ -45,3 +45,10 @@ body {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: #F0F3F5; }
 ::-webkit-scrollbar-thumb { background: #D5D8DC; border-radius: 3px; }
+
+/* Chat widget slow pulse */
+@keyframes pulse-slow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,155,35,0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(200,155,35,0); }
+}
+.animate-pulse-slow { animation: pulse-slow 2.5s ease-in-out infinite; }

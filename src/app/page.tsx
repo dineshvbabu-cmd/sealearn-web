@@ -177,7 +177,7 @@ export default async function HomePage() {
               {[
                 "NIMASA-approved for all programmes",
                 "State-of-the-art Class A bridge and engine room simulators",
-                "50% instalment plan available",
+                "Flexible payment plans — contact admissions for details",
                 "AI-powered student support chatbot (24/7)",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-white/65 text-sm">
@@ -322,18 +322,18 @@ export default async function HomePage() {
                     <div className="border-t border-border pt-4">
                       <div className="flex items-center justify-between mb-3">
                         <div>
-                          <div className="text-[10px] text-muted line-through">₦{totalFee.toLocaleString()}</div>
-                          <div className="font-cinzel font-bold text-ocean text-lg">₦{finalFee.toLocaleString()}</div>
+                          <div className="text-[10px] text-muted uppercase tracking-wide">Bundle Discount</div>
+                          <div className="font-bold text-jade text-lg">{pkg.discountPercent}% off standard rate</div>
                         </div>
                         <div className="bg-jade/10 text-jade text-xs font-bold px-2 py-1 rounded-lg">
-                          Save ₦{savings.toLocaleString()}
+                          Save {pkg.discountPercent}%
                         </div>
                       </div>
                       <Link
                         href="/courses"
                         className="w-full flex items-center justify-center gap-2 bg-gold text-navy font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm"
                       >
-                        Select This Package <ArrowRight size={13} />
+                        View &amp; Request Pricing <ArrowRight size={13} />
                       </Link>
                     </div>
                   </div>
@@ -419,7 +419,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <p className="text-white/35 text-xs mt-5">
-            Application fee: ₦15,000 · Pay via Paystack, Flutterwave, USSD *737# or bank transfer
+            No application fee · Submit your documents and receive a personalised fee quote
           </p>
         </div>
       </section>

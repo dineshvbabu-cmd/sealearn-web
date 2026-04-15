@@ -1,15 +1,15 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Upload, CreditCard, FileText, User } from "lucide-react";
+import { ArrowRight, CheckCircle, Upload, FileText, User, Mail } from "lucide-react";
 
 const steps = [
-  { num: "01", icon: <User size={20} />, title: "Register Account", detail: "Create your free SeaLearn account at sealearn.edu.ng" },
+  { num: "01", icon: <User size={20} />, title: "Register Account", detail: "Create your free SeaLearn account — no application fee required" },
   { num: "02", icon: <FileText size={20} />, title: "Select Programme", detail: "Choose your course and preferred intake month (Jan, Jun, Sep)" },
   { num: "03", icon: <FileText size={20} />, title: "Fill Application", detail: "Complete the online form: personal details, academic history, sea service" },
   { num: "04", icon: <Upload size={20} />, title: "Upload Documents", detail: "WAEC/NECO results, NIN, passport photo, ML5/ENG1 medical certificate" },
-  { num: "05", icon: <CreditCard size={20} />, title: "Pay Application Fee", detail: "₦15,000 via Paystack, Flutterwave, USSD *737# or bank transfer" },
+  { num: "05", icon: <CheckCircle size={20} />, title: "Document Verification", detail: "Our admissions team reviews your documents within 3 working days" },
   { num: "06", icon: <CheckCircle size={20} />, title: "Track Status", detail: "Monitor your application in real-time via the student portal" },
   { num: "07", icon: <FileText size={20} />, title: "Receive Offer Letter", detail: "Accepted applicants receive a digital offer letter within 10 working days" },
-  { num: "08", icon: <CreditCard size={20} />, title: "Pay Tuition & Enrol", detail: "Confirm enrolment and pay first tuition instalment to activate your LMS access" },
+  { num: "08", icon: <Mail size={20} />, title: "Receive Fee Quote & Enrol", detail: "We email your personalised fee schedule with payment options — confirm to activate LMS access" },
 ];
 
 const requiredDocs = [
@@ -150,22 +150,21 @@ export default function AdmissionsPage() {
             </div>
           </div>
 
-          {/* Fee card */}
+          {/* No-fee callout */}
           <div className="bg-navy rounded-xl p-5 text-white">
-            <div className="text-white/45 text-xs uppercase tracking-wider mb-1">Application Fee</div>
-            <div className="font-cinzel text-gold text-3xl font-bold mb-3">₦15,000</div>
-            <div className="text-white/50 text-xs mb-4">One-time, non-refundable · Required to submit application</div>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {paymentMethods.map((m) => (
-                <div key={m.label} className="bg-white/8 rounded-lg p-3">
-                  <div className="text-lg mb-1">{m.icon}</div>
-                  <div className="font-bold text-xs">{m.label}</div>
-                  <div className="text-white/40 text-[10px]">{m.detail}</div>
-                </div>
-              ))}
+            <div className="text-white/45 text-xs uppercase tracking-wider mb-1">Application</div>
+            <div className="font-cinzel text-gold text-2xl font-bold mb-2">No Application Fee</div>
+            <div className="text-white/60 text-sm mb-4 leading-relaxed">
+              SeaLearn Nigeria does not charge an application fee. Submit your documents, receive a personalised fee quote, and confirm your place — all at no upfront cost.
             </div>
-            <div className="bg-white/8 rounded-lg p-3 text-xs text-white/60">
-              💡 Tuition instalment: 50% on enrolment · 50% after Month 3
+            <a
+              href="mailto:admissions@sealearn.edu.ng?subject=Course Fee Enquiry"
+              className="flex items-center justify-center gap-2 bg-gold text-navy font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm"
+            >
+              📧 Request a Fee Quote
+            </a>
+            <div className="mt-3 bg-white/8 rounded-lg p-3 text-xs text-white/60">
+              💡 Flexible payment plans available upon enrolment. Contact admissions for details.
             </div>
           </div>
 
