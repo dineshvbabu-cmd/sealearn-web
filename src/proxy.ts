@@ -59,15 +59,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Pure admins who land on /portal → send them to admin panel
-    if (PURE_ADMIN_ROLES.includes(role!)) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/dashboard";
-      return NextResponse.redirect(url);
-    }
-
-    // Staff roles (INSTRUCTOR, REGISTRAR, LMS_ADMIN) are allowed into portal (read-only banner in layout)
-    // Students and Cadets → allowed through
+    // All authenticated roles (including ADMIN/SUPER_ADMIN) can access portal.
+    // Admins see a banner in the portal layout allowing them to test student experience.
     return NextResponse.next();
   }
 

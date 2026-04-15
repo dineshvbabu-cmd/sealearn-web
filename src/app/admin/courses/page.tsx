@@ -47,8 +47,6 @@ export default async function AdminCoursesPage() {
                 <th className="text-left px-5 py-3 text-xs font-bold text-muted uppercase tracking-wide">Title</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Level</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">STCW</th>
-                <th className="text-right px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Fee (₦)</th>
-                <th className="text-right px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">App. Fee</th>
                 <th className="text-center px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Status</th>
                 <th className="text-right px-5 py-3 text-xs font-bold text-muted uppercase tracking-wide">Actions</th>
               </tr>
@@ -68,12 +66,6 @@ export default async function AdminCoursesPage() {
                     </td>
                     <td className="px-4 py-3 text-muted text-xs">{levelLabels[course.level] ?? course.level}</td>
                     <td className="px-4 py-3 text-muted text-xs">{course.stcwRegulation ?? "—"}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-ocean">
-                      ₦{course.feeNaira.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-right text-muted text-xs">
-                      ₦{course.applicationFee.toLocaleString()}
-                    </td>
                     <td className="px-4 py-3 text-center">
                       <form action={toggleAction}>
                         <button type="submit" title={course.isActive ? "Deactivate" : "Activate"}>

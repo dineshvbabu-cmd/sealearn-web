@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 
 const roleColors: Record<string, string> = {
   STUDENT: "bg-ocean/10 text-ocean",
@@ -47,9 +47,17 @@ export default async function AdminUsersPage({
 
   return (
     <>
-      <div className="mb-6">
-        <h1 className="font-cinzel text-2xl font-bold text-navy">Users &amp; Students</h1>
-        <p className="text-muted text-sm mt-1">{users.length} users found</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-cinzel text-2xl font-bold text-navy">Users &amp; Students</h1>
+          <p className="text-muted text-sm mt-1">{users.length} users found</p>
+        </div>
+        <Link
+          href="/admin/users/new"
+          className="inline-flex items-center gap-2 bg-teal text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-teal/90 transition-colors shrink-0"
+        >
+          <UserPlus size={14} /> Add User
+        </Link>
       </div>
 
       {/* Filters */}

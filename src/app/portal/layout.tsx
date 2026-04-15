@@ -19,28 +19,34 @@ const sidebarLinks = [
   { href: "/portal/help", icon: "❓", label: "Help Centre" },
 ];
 
-const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR"];
+const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR", "LMS_ADMIN"];
+const ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN"];
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect("/auth/login");
 
-  // Admin accounts belong in the admin panel, not the student portal
   const role = (session.user as { role?: string })?.role;
-  if (role === "ADMIN" || role === "SUPER_ADMIN") redirect("/admin/dashboard");
-
   const isStaff = STAFF_ROLES.includes(role ?? "");
+  const isAdmin = ADMIN_ROLES.includes(role ?? "");
 
   const user = session.user;
   const initials = user?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() ?? "S";
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] bg-surface flex-col">
+      {/* Admin preview banner */}
+      {isAdmin && (
+        <div className="bg-danger text-white text-xs font-bold text-center py-2 px-4 flex items-center justify-center gap-3">
+          <span>🔴 ADMIN PREVIEW MODE — {role?.replace("_", " ")} — You are previewing the student portal.</span>
+          <a href="/admin/dashboard" className="underline hover:text-white/80">← Back to Admin Panel</a>
+        </div>
+      )}
       {/* Staff read-only banner */}
       {isStaff && (
-        <div className="bg-amber-500 text-white text-xs font-bold text-center py-2 px-4 flex items-center justify-center gap-3">
-          <span>👁 STAFF READ-ONLY VIEW — {role?.replace("_", " ")} — You are viewing the student portal. Changes made here may not be saved.</span>
-          <a href="/admin/dashboard" className="underline hover:text-white/80">← Back to Staff Panel</a>
+        <div className="bg-amber text-navy text-xs font-bold text-center py-2 px-4 flex items-center justify-center gap-3">
+          <span>👁 STAFF VIEW — {role?.replace("_", " ")} — You are viewing the student portal.</span>
+          <a href="/admin/dashboard" className="underline hover:text-navy/70">← Back to Staff Panel</a>
         </div>
       )}
       <div className="flex flex-1">

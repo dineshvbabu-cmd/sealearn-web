@@ -4,6 +4,8 @@ import { updateCourse } from "@/actions/courses";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const levels = [
   { value: "PRE_SEA", label: "Pre-Sea" },
   { value: "SHORT_COURSE", label: "Short Course" },
@@ -12,8 +14,9 @@ const levels = [
   { value: "REFRESHER", label: "Refresher" },
 ];
 
-export default async function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditCoursePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
   const { id } = await params;
+  const { saved } = await searchParams;
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) notFound();
 
@@ -21,6 +24,11 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
 
   return (
     <>
+      {saved && (
+        <div className="bg-jade/10 border border-jade/30 text-jade text-sm px-4 py-3 rounded-lg mb-5">
+          Course saved successfully.
+        </div>
+      )}
       <div className="mb-6 flex items-center gap-3">
         <Link href="/admin/courses" className="text-muted hover:text-navy transition-colors">
           <ArrowLeft size={18} />
@@ -87,32 +95,6 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
-                Course Fee (₦) *
-              </label>
-              <input
-                name="feeNaira"
-                type="number"
-                required
-                min={0}
-                defaultValue={course.feeNaira}
-                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
-                Application Fee (₦)
-              </label>
-              <input
-                name="applicationFee"
-                type="number"
-                min={0}
-                defaultValue={course.applicationFee}
-                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
-              />
-            </div>
 
             <div>
               <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">

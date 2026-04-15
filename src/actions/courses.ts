@@ -22,8 +22,8 @@ export async function createCourse(formData: FormData) {
       stcwRegulation: (formData.get("stcwRegulation") as string) || null,
       level: formData.get("level") as CourseLevel,
       durationWeeks: Number(formData.get("durationWeeks")),
-      feeNaira: Number(formData.get("feeNaira")),
-      applicationFee: Number(formData.get("applicationFee") || 15000),
+      feeNaira: 0,
+      applicationFee: 0,
       description: formData.get("description") as string,
       eligibility: formData.get("eligibility") as string,
       outcomes: formData.get("outcomes") as string,
@@ -48,8 +48,6 @@ export async function updateCourse(id: string, formData: FormData) {
       stcwRegulation: (formData.get("stcwRegulation") as string) || null,
       level: formData.get("level") as CourseLevel,
       durationWeeks: Number(formData.get("durationWeeks")),
-      feeNaira: Number(formData.get("feeNaira")),
-      applicationFee: Number(formData.get("applicationFee") || 15000),
       description: formData.get("description") as string,
       eligibility: formData.get("eligibility") as string,
       outcomes: formData.get("outcomes") as string,
@@ -61,7 +59,8 @@ export async function updateCourse(id: string, formData: FormData) {
 
   revalidatePath("/courses");
   revalidatePath("/admin/courses");
-  redirect("/admin/courses?saved=1");
+  revalidatePath(`/admin/courses/${id}/edit`);
+  redirect(`/admin/courses/${id}/edit?saved=1`);
 }
 
 export async function deleteCourse(id: string) {
