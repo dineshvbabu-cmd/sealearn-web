@@ -72,6 +72,16 @@ export default async function AboutContentPage() {
           </div>
         </div>
 
+        {/* Campus Gallery Photos */}
+        <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4">
+          <h2 className="font-bold text-navy pb-2 border-b border-border">Campus Life Gallery (4 photos)</h2>
+          <p className="text-muted text-xs -mt-2">These appear in the Campus Life grid on the About page. Paste image URLs from sealearn.uk or R2.</p>
+          <F name="campus_photo1_url" label="Photo 1 URL" defaultValue={cfg.campus_photo1_url} placeholder="https://sealearn.uk/wp-content/uploads/…" />
+          <F name="campus_photo2_url" label="Photo 2 URL" defaultValue={cfg.campus_photo2_url} placeholder="https://sealearn.uk/wp-content/uploads/…" />
+          <F name="campus_photo3_url" label="Photo 3 URL" defaultValue={cfg.campus_photo3_url} placeholder="https://sealearn.uk/wp-content/uploads/…" />
+          <F name="about_image_url"   label="Photo 4 URL" defaultValue={cfg.about_image_url}   placeholder="https://sealearn.uk/wp-content/uploads/…" />
+        </div>
+
         {/* Stats */}
         <div className="bg-white rounded-xl border border-border shadow-sm p-6">
           <h2 className="font-bold text-navy mb-4 pb-2 border-b border-border">Key Statistics</h2>

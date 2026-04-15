@@ -30,6 +30,7 @@ export async function createCourse(formData: FormData) {
       nimasaApproved: formData.get("nimasaApproved") === "true",
       nimasaRefNumber: (formData.get("nimasaRefNumber") as string) || null,
       isActive: true,
+      imageUrl: (formData.get("imageUrl") as string) || null,
     },
   });
 
@@ -54,6 +55,7 @@ export async function updateCourse(id: string, formData: FormData) {
       nimasaApproved: formData.get("nimasaApproved") === "true",
       nimasaRefNumber: (formData.get("nimasaRefNumber") as string) || null,
       isActive: formData.get("isActive") === "true",
+      imageUrl: (formData.get("imageUrl") as string) || null,
     },
   });
 

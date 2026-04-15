@@ -54,6 +54,20 @@ export default async function EditCoursePage({ params, searchParams }: { params:
               />
             </div>
 
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
+                Course Image URL
+              </label>
+              <input
+                name="imageUrl"
+                type="url"
+                defaultValue={course.imageUrl ?? ""}
+                placeholder="https://sealearn.uk/wp-content/uploads/…"
+                className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-ocean"
+              />
+              <p className="text-[11px] text-muted mt-1">Shown on the course card. Leave blank to use the default ship photo.</p>
+            </div>
+
             <div>
               <label className="block text-xs font-bold text-navy uppercase tracking-wide mb-1.5">
                 STCW Regulation

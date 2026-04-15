@@ -93,10 +93,8 @@ export default async function AdminLeadershipPage() {
                   <Pencil size={14} />
                 </Link>
 
-                <form action={deleteLeader.bind(null, m.id)} onSubmit={(e) => {
-                  if (!confirm(`Remove ${m.name}?`)) e.preventDefault();
-                }}>
-                  <button type="submit" className="p-2 text-muted hover:text-red-500" title="Delete">
+                <form action={deleteLeader.bind(null, m.id)}>
+                  <button type="submit" className="p-2 text-muted hover:text-red-500" title={`Delete ${m.name}`}>
                     <Trash2 size={14} />
                   </button>
                 </form>

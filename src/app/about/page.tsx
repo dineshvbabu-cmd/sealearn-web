@@ -187,10 +187,10 @@ export default async function AboutPage() {
         <h2 className="font-cinzel text-2xl text-navy font-bold mb-6">Campus Life</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
-            "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg",
-            "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg",
-            "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg",
+            cfg.campus_photo1_url || "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
+            cfg.campus_photo2_url || "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg",
+            cfg.campus_photo3_url || "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg",
+            cfg.about_image_url   || "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png",
           ].map((src, i) => (
             <div key={i} className="relative h-44 rounded-xl overflow-hidden">
               <Image src={src} alt={`Campus ${i + 1}`} fill className="object-cover" unoptimized />
