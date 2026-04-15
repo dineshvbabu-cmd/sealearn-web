@@ -1,3 +1,4 @@
+import { requireEnrolment } from "@/lib/portal-guard";
 import { Monitor, Clock, CheckCircle, AlertCircle } from "lucide-react";
 
 const bookings = [
@@ -24,7 +25,8 @@ const statusConfig: Record<string, string> = {
   pending: "bg-amber/10 text-amber border-amber/20",
 };
 
-export default function SimulatorPage() {
+export default async function SimulatorPage() {
+  await requireEnrolment();
   return (
     <div className="px-6 py-8">
       <div className="flex items-center justify-between mb-6">

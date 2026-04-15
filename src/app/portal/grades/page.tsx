@@ -1,3 +1,4 @@
+import { requireEnrolment } from "@/lib/portal-guard";
 import { CheckCircle, Clock, Lock, TrendingUp, Award } from "lucide-react";
 
 const modules = [
@@ -23,7 +24,8 @@ const avgScore = completedModules.length
   ? Math.round(completedModules.reduce((s, m) => s + (m.score ?? 0), 0) / completedModules.length)
   : 0;
 
-export default function GradesPage() {
+export default async function GradesPage() {
+  await requireEnrolment();
   return (
     <div className="px-6 py-8">
       <div className="mb-6">

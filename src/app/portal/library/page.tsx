@@ -1,12 +1,10 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, FileText, Video, ExternalLink, Download, Presentation } from "lucide-react";
+import { requireEnrolment } from "@/lib/portal-guard";
 
 export default async function LibraryPage() {
-  const session = await auth();
-  if (!session) redirect("/auth/login");
+  const session = await requireEnrolment();
 
   // Get all active enrolments with course resources
   const enrolments = await prisma.enrolment.findMany({

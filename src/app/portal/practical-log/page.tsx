@@ -1,3 +1,4 @@
+import { requireEnrolment } from "@/lib/portal-guard";
 import { CheckCircle, Clock, AlertCircle, FileText } from "lucide-react";
 
 const logEntries = [
@@ -21,7 +22,8 @@ const totalHours = logEntries.reduce((s, e) => s + e.hours, 0);
 const signedHours = logEntries.filter((e) => e.status === "signed").reduce((s, e) => s + e.hours, 0);
 const pendingCount = logEntries.filter((e) => e.status === "pending").length;
 
-export default function PracticalLogPage() {
+export default async function PracticalLogPage() {
+  await requireEnrolment();
   return (
     <div className="px-6 py-8">
       <div className="flex items-center justify-between mb-6">

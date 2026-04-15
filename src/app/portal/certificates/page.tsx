@@ -1,3 +1,4 @@
+import { requireEnrolment } from "@/lib/portal-guard";
 import { Award, Download, ExternalLink, Lock } from "lucide-react";
 
 const earned = [
@@ -22,7 +23,8 @@ const pending = [
   { title: "Certificate of Competency (CoC)", stcw: "STCW Reg. II/2", requirement: "Complete programme + NIMASA examination" },
 ];
 
-export default function CertificatesPage() {
+export default async function CertificatesPage() {
+  await requireEnrolment();
   return (
     <div className="px-6 py-8">
       <div className="mb-6">

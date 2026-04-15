@@ -1,3 +1,5 @@
+import { requireEnrolment } from "@/lib/portal-guard";
+
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
 const schedule: Record<string, { subject: string; room: string; instructor: string; type: string } | null> = {
@@ -32,7 +34,8 @@ const typeLabels: Record<string, string> = {
   practical: "Practical",
 };
 
-export default function TimetablePage() {
+export default async function TimetablePage() {
+  await requireEnrolment();
   const today = days[new Date().getDay() - 1] ?? "Mon";
 
   return (

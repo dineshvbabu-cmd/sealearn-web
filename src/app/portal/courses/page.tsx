@@ -1,8 +1,7 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, Clock, CheckCircle, PlayCircle, ArrowRight } from "lucide-react";
+import { requireEnrolment } from "@/lib/portal-guard";
 
 const statusColors: Record<string, string> = {
   ACTIVE: "bg-jade/10 text-jade",
@@ -13,8 +12,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default async function LMSCoursesPage() {
-  const session = await auth();
-  if (!session) redirect("/auth/login");
+  const session = await requireEnrolment();
 
   const enrolments = await prisma.enrolment.findMany({
     where: { userId: session.user.id },

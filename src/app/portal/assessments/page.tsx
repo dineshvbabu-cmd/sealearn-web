@@ -1,12 +1,10 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ClipboardList, CheckCircle, Clock, AlertCircle, TrendingUp, Lock } from "lucide-react";
+import { requireEnrolment } from "@/lib/portal-guard";
 
 export default async function AssessmentsPage() {
-  const session = await auth();
-  if (!session) redirect("/auth/login");
+  const session = await requireEnrolment();
 
   const enrolments = await prisma.enrolment.findMany({
     where: { userId: session.user.id, status: "ACTIVE" },

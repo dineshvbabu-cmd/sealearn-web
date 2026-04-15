@@ -6,54 +6,74 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
 // ── Role classification ────────────────────────────────────────
-const STAFF_ROLES  = ["INSTRUCTOR", "REGISTRAR", "LMS_ADMIN"];
-const ADMIN_ROLES  = ["ADMIN", "SUPER_ADMIN"];
+const STAFF_ROLES   = ["INSTRUCTOR", "REGISTRAR", "LMS_ADMIN"];
+const ADMIN_ROLES   = ["ADMIN", "SUPER_ADMIN"];
 const STUDENT_ROLES = ["STUDENT", "CADET", "GUEST"];
 
-// ── All portal sidebar links ───────────────────────────────────
-// `resource` matches the "portal:<slug>" key stored in UserPermission
-const ALL_STUDENT_LINKS = [
-  { href: "/portal/dashboard",     icon: "🏠", label: "Dashboard",          resource: "portal:dashboard"   },
-  { href: "/portal/courses",       icon: "📚", label: "My Courses (LMS)",   resource: "portal:courses"     },
-  { href: "/portal/assessments",   icon: "📝", label: "Mock Assessments",   resource: "portal:assessments" },
-  { href: "/portal/timetable",     icon: "📅", label: "Timetable",          resource: "portal:timetable"   },
-  { href: "/portal/grades",        icon: "📊", label: "Grades & KPI",       resource: "portal:grades"      },
-  { href: "/portal/practical-log", icon: "📋", label: "Practical Log",      resource: "portal:practical-log"},
-  { href: "/portal/simulator",     icon: "🛳️", label: "Simulator Booking",  resource: "portal:simulator"   },
-  { href: "/portal/fees",          icon: "💳", label: "Fees & Payments",    resource: "portal:fees"        },
-  { href: "/portal/certificates",  icon: "🎓", label: "My Certificates",    resource: "portal:certificates"},
-  { href: "/portal/library",       icon: "📖", label: "Library",            resource: "portal:library"     },
-  { href: "/portal/notifications", icon: "🔔", label: "Notifications",      resource: "portal:notifications"},
-  { href: "/portal/help",          icon: "❓", label: "Help Centre",        resource: "portal:help"        },
-];
+// ── Sidebar links that require an active enrolment ─────────────
+const ENROLMENT_REQUIRED = new Set([
+  "portal:courses", "portal:assessments", "portal:timetable",
+  "portal:grades",  "portal:practical-log", "portal:simulator",
+  "portal:certificates", "portal:library",
+]);
 
-// Pages always visible regardless of permissions
-const ALWAYS_VISIBLE = new Set(["portal:dashboard", "portal:fees", "portal:help", "portal:notifications"]);
+// ── Pages always visible regardless of permissions / enrolment ──
+const ALWAYS_VISIBLE = new Set([
+  "portal:dashboard", "portal:fees", "portal:help", "portal:notifications",
+]);
+
+// ── All portal sidebar links ───────────────────────────────────
+const ALL_STUDENT_LINKS = [
+  { href: "/portal/dashboard",     icon: "🏠", label: "Dashboard",         resource: "portal:dashboard"    },
+  { href: "/portal/courses",       icon: "📚", label: "My Courses (LMS)",  resource: "portal:courses"      },
+  { href: "/portal/assessments",   icon: "📝", label: "Mock Assessments",  resource: "portal:assessments"  },
+  { href: "/portal/timetable",     icon: "📅", label: "Timetable",         resource: "portal:timetable"    },
+  { href: "/portal/grades",        icon: "📊", label: "Grades & KPI",      resource: "portal:grades"       },
+  { href: "/portal/practical-log", icon: "📋", label: "Practical Log",     resource: "portal:practical-log"},
+  { href: "/portal/simulator",     icon: "🛳️", label: "Simulator Booking", resource: "portal:simulator"    },
+  { href: "/portal/fees",          icon: "💳", label: "Fees & Payments",   resource: "portal:fees"         },
+  { href: "/portal/certificates",  icon: "🎓", label: "My Certificates",   resource: "portal:certificates" },
+  { href: "/portal/library",       icon: "📖", label: "Library",           resource: "portal:library"      },
+  { href: "/portal/notifications", icon: "🔔", label: "Notifications",     resource: "portal:notifications"},
+  { href: "/portal/help",          icon: "❓", label: "Help Centre",       resource: "portal:help"         },
+];
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect("/auth/login");
 
-  const role  = (session.user as { role?: string })?.role ?? "STUDENT";
-  const isStaff = STAFF_ROLES.includes(role);
-  const isAdmin = ADMIN_ROLES.includes(role);
+  const role      = (session.user as { role?: string })?.role ?? "STUDENT";
+  const isStaff   = STAFF_ROLES.includes(role);
+  const isAdmin   = ADMIN_ROLES.includes(role);
   const isStudent = STUDENT_ROLES.includes(role);
 
   // ── Determine visible sidebar links ───────────────────────────
   let visibleLinks = ALL_STUDENT_LINKS;
 
   if (isStudent) {
-    // Load per-user portal permissions (resource starts with "portal:")
-    const perms = await prisma.userPermission.findMany({
-      where: { userId: session.user.id, resource: { startsWith: "portal:" } },
+    // 1. Check whether this student has ANY enrolment (any status)
+    const enrolmentCount = await prisma.enrolment.count({
+      where: { userId: session.user.id },
     });
+    const hasEnrolment = enrolmentCount > 0;
 
-    if (perms.length > 0) {
-      // Permissions explicitly set — only show allowed pages (always-visible stay regardless)
-      const allowed = new Set(perms.filter((p) => p.canView).map((p) => p.resource));
-      visibleLinks = ALL_STUDENT_LINKS.filter((l) => ALWAYS_VISIBLE.has(l.resource) || allowed.has(l.resource));
+    if (!hasEnrolment) {
+      // Not yet enrolled — lock sidebar to always-visible pages only
+      visibleLinks = ALL_STUDENT_LINKS.filter((l) => ALWAYS_VISIBLE.has(l.resource));
+    } else {
+      // Enrolled — respect admin-set per-page permissions
+      const perms = await prisma.userPermission.findMany({
+        where: { userId: session.user.id, resource: { startsWith: "portal:" } },
+      });
+
+      if (perms.length > 0) {
+        const allowed = new Set(perms.filter((p) => p.canView).map((p) => p.resource));
+        visibleLinks = ALL_STUDENT_LINKS.filter(
+          (l) => ALWAYS_VISIBLE.has(l.resource) || allowed.has(l.resource)
+        );
+      }
+      // No permissions set → show all links (default for enrolled students)
     }
-    // If no permissions set: show all links (default open access)
   }
 
   const user     = session.user;
@@ -108,18 +128,12 @@ export default async function PortalLayout({ children }: { children: React.React
 
           {/* Bottom */}
           <div className="p-4 border-t border-white/10 space-y-2">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-white/30 hover:text-white/60 text-xs transition-colors"
-            >
+            <Link href="/" className="flex items-center gap-2 text-white/30 hover:text-white/60 text-xs transition-colors">
               <Anchor size={12} />
               Back to main site
             </Link>
             <form action={logoutAction}>
-              <button
-                type="submit"
-                className="flex items-center gap-2 text-white/30 hover:text-red-300 text-xs transition-colors"
-              >
+              <button type="submit" className="flex items-center gap-2 text-white/30 hover:text-red-300 text-xs transition-colors">
                 <LogOut size={12} />
                 Sign Out
               </button>
