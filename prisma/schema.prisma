@@ -139,6 +139,7 @@ model IntakeDate {
   isOpen      Boolean  @default(true)
   capacity    Int      @default(30)
   enrolments  Enrolment[]
+  applications Application[]
 }
 
 model Module {
@@ -185,6 +186,8 @@ model Application {
   user            User              @relation(fields: [userId], references: [id])
   courseId        String
   course          Course            @relation(fields: [courseId], references: [id])
+  intakeDateId    String?
+  intakeDate      IntakeDate?       @relation(fields: [intakeDateId], references: [id])
   status          ApplicationStatus @default(DRAFT)
   // Personal
   dateOfBirth     DateTime?

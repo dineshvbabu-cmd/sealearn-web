@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, BookOpen, ClipboardList, TrendingUp, Award, AlertCircle, ArrowRight, FileText, Mail, CheckSquare } from "lucide-react";
+import { Bell, BookOpen, ClipboardList, TrendingUp, Award, AlertCircle, ArrowRight, FileText, Mail, CheckSquare, Clock, XCircle, CheckCircle2 } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -22,17 +22,24 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session) redirect("/auth/login");
 
-  const enrolments = await prisma.enrolment.findMany({
-    where: { userId: session.user.id },
-    include: {
-      course: {
-        include: { modules: { select: { id: true, title: true, order: true } } },
+  const [enrolments, application] = await Promise.all([
+    prisma.enrolment.findMany({
+      where: { userId: session.user.id },
+      include: {
+        course: {
+          include: { modules: { select: { id: true, title: true, order: true } } },
+        },
+        progress: true,
+        certificates: { select: { id: true } },
       },
-      progress: true,
-      certificates: { select: { id: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.application.findFirst({
+      where: { userId: session.user.id },
+      include: { course: { select: { title: true } } },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   const activeEnrolments = enrolments.filter((e) => e.status === "ACTIVE");
   const completedEnrolments = enrolments.filter((e) => e.status === "COMPLETED");
@@ -70,8 +77,69 @@ export default async function DashboardPage() {
   const now = new Date();
   const dateLabel = now.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
-  // ── No enrolments — show application-pending dashboard ───────
+  // ── No enrolments — show admission status dashboard ──────────
   if (enrolments.length === 0) {
+    // Determine what state the applicant is in
+    const appStatus = application?.status ?? null;
+
+    // Steps with dynamic "done" state based on application progress
+    const steps = [
+      {
+        icon: CheckSquare,
+        label: "Account Created",
+        detail: "Your portal account is active.",
+        done: true,
+        href: null,
+      },
+      {
+        icon: FileText,
+        label: "Application Submitted",
+        detail: appStatus === "DRAFT"
+          ? "Continue your application — you have a draft in progress."
+          : appStatus
+          ? `Applied for: ${application?.course?.title ?? "a programme"}`
+          : "Select a programme, fill your details, and upload documents.",
+        done: !!appStatus && appStatus !== "DRAFT",
+        href: appStatus === "DRAFT" ? "/apply/programme" : appStatus ? null : "/apply/programme",
+        cta: appStatus === "DRAFT" ? "Continue Application →" : !appStatus ? "Start Application →" : null,
+      },
+      {
+        icon: Clock,
+        label: "Admissions Review",
+        detail: appStatus === "UNDER_REVIEW"
+          ? "Your documents are currently being reviewed by the admissions team."
+          : appStatus === "ACCEPTED"
+          ? "Congratulations! Your application has been accepted."
+          : appStatus === "REJECTED"
+          ? "Application was not successful. Contact admissions for details."
+          : "The admissions team reviews applications within 3 working days.",
+        done: appStatus === "ACCEPTED",
+        href: null,
+      },
+      {
+        icon: Award,
+        label: "Pay & Get Enrolled",
+        detail: appStatus === "ACCEPTED"
+          ? "Complete payment to unlock your student portal and LMS access."
+          : "After acceptance, complete your personalised fee payment to begin your course.",
+        done: false,
+        href: appStatus === "ACCEPTED" ? "/portal/fees" : null,
+        cta: appStatus === "ACCEPTED" ? "Go to Payment →" : null,
+      },
+    ];
+
+    // Status banner config
+    const bannerConfig = {
+      DRAFT: { color: "bg-ocean/10 border-ocean/30 text-ocean", icon: FileText, msg: "You have a draft application — continue to complete and submit it." },
+      SUBMITTED: { color: "bg-amber/10 border-amber/30 text-amber", icon: AlertCircle, msg: "Application received! We will review your documents within 3 working days." },
+      UNDER_REVIEW: { color: "bg-amber/10 border-amber/30 text-amber", icon: Clock, msg: "Your application is under review. We will email you with a decision soon." },
+      ACCEPTED: { color: "bg-jade/10 border-jade/30 text-jade", icon: CheckCircle2, msg: `Congratulations! You have been accepted to ${application?.course?.title ?? "your programme"}. Complete payment to start.` },
+      REJECTED: { color: "bg-danger/10 border-danger/30 text-danger", icon: XCircle, msg: "Your application was unsuccessful. Contact admissions to discuss your options." },
+      WAITLISTED: { color: "bg-amber/10 border-amber/30 text-amber", icon: Clock, msg: "You are on the waiting list. We will contact you if a place becomes available." },
+    } as const;
+
+    const banner = appStatus ? bannerConfig[appStatus as keyof typeof bannerConfig] : null;
+
     return (
       <div className="p-6 max-w-3xl mx-auto">
         <div className="mb-6">
@@ -81,23 +149,29 @@ export default async function DashboardPage() {
           </h1>
         </div>
 
-        <div className="bg-amber/10 border border-amber/30 rounded-xl p-4 flex items-start gap-3 mb-6">
-          <AlertCircle size={18} className="text-amber shrink-0 mt-0.5" />
-          <div>
-            <div className="font-bold text-amber text-sm">Application Pending</div>
-            <div className="text-muted text-sm mt-0.5">
-              Your account is active. Complete the steps below to get enrolled. Contact us at{" "}
-              <a href="mailto:admissions@sealearn.edu.ng" className="text-ocean underline">admissions@sealearn.edu.ng</a>{" "}
-              or call <span className="font-semibold">+234 704 280 6167</span> if you need help.
+        {/* Status banner */}
+        {banner ? (
+          <div className={`border rounded-xl p-4 flex items-start gap-3 mb-6 ${banner.color}`}>
+            <banner.icon size={18} className="shrink-0 mt-0.5" />
+            <div className="text-sm">{banner.msg}</div>
+          </div>
+        ) : (
+          <div className="bg-amber/10 border border-amber/30 rounded-xl p-4 flex items-start gap-3 mb-6">
+            <AlertCircle size={18} className="text-amber shrink-0 mt-0.5" />
+            <div>
+              <div className="font-bold text-amber text-sm">No Application Yet</div>
+              <div className="text-muted text-sm mt-0.5">
+                Start your application to get enrolled. It takes about 10 minutes.
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Application steps */}
+        {/* Application journey */}
         <div className="bg-white rounded-xl border border-border shadow-sm p-6 mb-5">
           <h2 className="font-cinzel text-navy font-bold text-base mb-5">Your Admissions Journey</h2>
           <div className="space-y-5">
-            {applicationSteps.map((step, i) => (
+            {steps.map((step, i) => (
               <div key={i} className="flex items-start gap-4">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${step.done ? "bg-jade/10 text-jade" : "bg-surface text-muted"}`}>
                   <step.icon size={16} />
@@ -107,16 +181,36 @@ export default async function DashboardPage() {
                     {step.done && "✓ "}{step.label}
                   </div>
                   <div className="text-muted text-xs mt-0.5">{step.detail}</div>
+                  {step.href && step.cta && (
+                    <Link href={step.href} className="text-xs text-ocean font-semibold hover:underline mt-1 inline-block">
+                      {step.cta}
+                    </Link>
+                  )}
                 </div>
-                <div className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 ${step.done ? "bg-jade/10 text-jade" : "bg-surface text-muted"}`}>
-                  {step.done ? "Done" : i === 1 ? "Next" : "Pending"}
+                <div className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 ${
+                  step.done
+                    ? "bg-jade/10 text-jade"
+                    : i === 1 && !appStatus
+                    ? "bg-gold/15 text-amber"
+                    : "bg-surface text-muted"
+                }`}>
+                  {step.done ? "Done" : i === 1 && !appStatus ? "Start" : "Pending"}
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Quick contact */}
+        {/* CTA / quick links */}
+        {(!appStatus || appStatus === "DRAFT") && (
+          <Link
+            href="/apply/programme"
+            className="block w-full text-center bg-gold text-navy font-bold py-3.5 rounded-xl hover:bg-yellow-400 transition-colors text-sm mb-4"
+          >
+            {appStatus === "DRAFT" ? "Continue Application →" : "Start Your Application →"}
+          </Link>
+        )}
+
         <div className="grid sm:grid-cols-2 gap-4">
           <a
             href="mailto:admissions@sealearn.edu.ng?subject=Application Enquiry"

@@ -77,9 +77,15 @@ export async function registerAction(
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({ data: { name, email, phone, passwordHash, role: "STUDENT" } });
 
-  // Do NOT auto-login — redirect to login page with a success notice.
-  // Student must explicitly log in; their application is reviewed before enrolment.
-  redirect("/auth/login?registered=1");
+  // Auto-login immediately after account creation and redirect to Step 2 of the application flow.
+  try {
+    await signIn("credentials", { email, password, redirectTo: "/apply/programme" });
+    return null;
+  } catch (err) {
+    if (isRedirect(err)) throw err;
+    // If auto-login fails for any reason, fall back to the login page
+    redirect("/auth/login?registered=1");
+  }
 }
 
 // ── Logout ────────────────────────────────────────────────────
