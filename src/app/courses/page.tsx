@@ -8,7 +8,7 @@ export default async function CoursesPage() {
     prisma.course.findMany({
       where: { isActive: true },
       orderBy: [{ level: "asc" }, { title: "asc" }],
-      select: { id: true, slug: true, title: true, stcwRegulation: true, level: true, durationWeeks: true, feeNaira: true, nimasaApproved: true },
+      select: { id: true, slug: true, title: true, stcwRegulation: true, level: true, durationWeeks: true, feeNaira: true, nimasaApproved: true, imageUrl: true },
     }).catch(() => []),
     prisma.coursePackage.findMany({
       where: { isActive: true },
@@ -33,7 +33,7 @@ export default async function CoursesPage() {
         durationWeeks: c.durationWeeks,
         durationText: durationText(c.durationWeeks),
         feeNaira: c.feeNaira,
-        imageUrl: "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=800&q=80",
+        imageUrl: c.imageUrl ?? "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg",
         tagColor: c.level === "PRE_SEA" ? "bg-teal" : c.level === "SHORT_COURSE" ? "bg-gold" : c.level === "POST_COC" ? "bg-jade" : c.level === "REFRESHER" ? "bg-steel" : "bg-ocean",
         nimasaApproved: c.nimasaApproved,
       }))

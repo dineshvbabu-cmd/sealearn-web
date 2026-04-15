@@ -29,15 +29,15 @@ const levelTag: Record<string, string> = {
   POST_COC: "Post-CoC", REFRESHER: "Refresher",
 };
 const fallbackImages = [
-  "https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=800&q=80",
-  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
-  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80",
+  "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg",
+  "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg",
+  "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png",
 ];
 
 export default async function HomePage() {
   const [cfg, dbCourses, dbNews, dbPackages] = await Promise.all([
     getSiteSection("homepage"),
-    prisma.course.findMany({ where: { isActive: true }, orderBy: { level: "asc" }, take: 3 }).catch(() => []),
+    prisma.course.findMany({ where: { isActive: true }, orderBy: { level: "asc" }, take: 3, select: { id: true, slug: true, title: true, level: true, durationWeeks: true, feeNaira: true, imageUrl: true } }).catch(() => []),
     prisma.post.findMany({ where: { publishedAt: { not: null } }, orderBy: { publishedAt: "desc" }, take: 3 }).catch(() => []),
     prisma.coursePackage.findMany({
       where: { isActive: true },
@@ -54,7 +54,7 @@ export default async function HomePage() {
   const featuredCourses = dbCourses.length
     ? dbCourses.map((c, i) => ({
         ...c,
-        imageUrl: fallbackImages[i % fallbackImages.length],
+        imageUrl: c.imageUrl ?? fallbackImages[i % fallbackImages.length],
         tag: levelTag[c.level] ?? c.level,
         tagColor: levelTagColor[c.level] ?? "bg-navy",
         durationText: `${c.durationWeeks} Weeks`,
