@@ -7,35 +7,36 @@ const sections = [
   {
     section: "about",
     data: {
-      mission_heading: "Training World-Class Nigerian Seafarers Since 2008",
-      mission: "To provide world-class, NIMASA-approved maritime training that equips Nigerian seafarers with the technical competencies, safety skills, and professional standards required to excel in the global maritime industry.",
-      vision: "To be Africa's leading maritime training institution, producing certified, safety-conscious seafarers who are ready for global deployment and who contribute to Nigeria's growth as a maritime nation.",
-      highlight_1: "NIMASA-approved institution with all programmes fully certified",
+      mission_heading: "Shaping World-Class Nigerian Seafarers Since 2000",
+      mission: "To provide world-class, NIMASA-approved maritime education that empowers Nigerian seafarers with the knowledge, skills, and certifications needed for successful careers in the global shipping industry.",
+      vision: "To be West Africa's leading maritime training institution, recognised internationally for excellence in STCW education and seafarer development.",
+      highlight_1: "Lagos campus at Apapa Port Road — Africa's busiest port",
       highlight_2: "IMO/STCW 2010 Manila Amendment compliant training delivery",
-      highlight_3: "State-of-the-art bridge and engine room simulators at Apapa campus",
-      highlight_4: "Over 2,000 Nigerian seafarers trained and deployed internationally",
+      highlight_3: "Class A bridge and engine room simulators on campus",
+      highlight_4: "3,200+ graduates serving on vessels worldwide",
       value1_icon: "⚓",
       value1_title: "Safety First",
-      value1_body: "Every programme is built around STCW safety standards. We instil a safety-first culture that our graduates carry throughout their careers.",
-      value2_icon: "🎓",
-      value2_title: "Excellence in Training",
-      value2_body: "Our instructors are certified STCW assessors with active sea-going experience. We deliver training that meets and exceeds international benchmarks.",
-      value3_icon: "🌍",
-      value3_title: "Global Standards",
-      value3_body: "All certificates issued are NIMASA-registered and internationally recognised under the STCW Convention, enabling our graduates to work on vessels worldwide.",
-      value4_icon: "🤝",
-      value4_title: "Integrity",
-      value4_body: "We operate with full transparency — no hidden fees, no shortcuts. Our admissions process is merit-based and our certifications are earned, not bought.",
+      value1_body: "Safety is non-negotiable — in training, at sea, and on campus.",
+      value2_icon: "🤝",
+      value2_title: "Integrity",
+      value2_body: "Transparent operations, honest assessments, accountable leadership.",
+      value3_icon: "🏆",
+      value3_title: "Excellence",
+      value3_body: "98% pass rate and industry-leading placement backed by expert faculty.",
+      value4_icon: "📋",
+      value4_title: "Compliance",
+      value4_body: "Fully aligned with NIMASA, IMO, STCW 2010 Manila and MLC 2006.",
       value5_icon: "💡",
       value5_title: "Innovation",
-      value5_body: "From digital student portals to AI-powered learning support, we continuously invest in technology to make quality maritime education accessible to every Nigerian.",
-      value6_icon: "🇳🇬",
-      value6_title: "Nigerian Pride",
-      value6_body: "We are proudly Nigerian — our mission is to build a world-class Nigerian maritime workforce that can compete on the global stage without leaving our shores.",
-      stats_seafarers: "2,000+",
+      value5_body: "AI-powered student support, Class A simulators and digital LMS.",
+      value6_icon: "🌍",
+      value6_title: "Community",
+      value6_body: "A strong alumni network of 3,200+ seafarers serving globally.",
+      stats_seafarers: "3,200+",
       stats_programmes: "23",
-      stats_years: "15+",
-      stats_partners: "12",
+      stats_years: "25+",
+      stats_partners: "28",
+      mission_image_url: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
     },
   },
   // ── CONTACT ──────────────────────────────────────────────────────────────
@@ -57,20 +58,20 @@ const sections = [
   {
     section: "home",
     data: {
-      hero_headline: "Nigeria's Premier Maritime Training Institute",
-      hero_subheadline: "NIMASA-Approved · IMO/STCW 2010 Manila Compliant · Apapa, Lagos",
-      hero_tagline: "Join 2,000+ certified Nigerian seafarers trained at SeaLearn",
-      cta_primary: "Browse Courses",
-      cta_primary_href: "/courses",
-      cta_secondary: "Start Application",
-      cta_secondary_href: "/admissions",
-      stats_1_value: "2,000+",
+      hero_headline: "Nigeria's Premier Maritime Training Institution",
+      hero_subheadline: "NIMASA Approved · IMO/STCW 2010 Manila Compliant · Pre-Sea to CoC Programmes. Shaping world-class Nigerian seafarers since 2000.",
+      hero_tagline: "Join 3,200+ certified Nigerian seafarers trained at SeaLearn",
+      cta_primary: "Apply Now",
+      cta_primary_href: "/admissions",
+      cta_secondary: "View STCW Courses",
+      cta_secondary_href: "/courses",
+      stats_1_value: "3,200+",
       stats_1_label: "Seafarers Trained",
-      stats_2_value: "23",
-      stats_2_label: "STCW Programmes",
-      stats_3_value: "100%",
-      stats_3_label: "NIMASA Approved",
-      stats_4_value: "15+",
+      stats_2_value: "98%",
+      stats_2_label: "STCW Pass Rate",
+      stats_3_value: "28+",
+      stats_3_label: "Industry Partners",
+      stats_4_value: "25+",
       stats_4_label: "Years Experience",
     },
   },
@@ -84,12 +85,6 @@ const sections = [
   },
   // ── MEDIA / IMAGES ────────────────────────────────────────────────────────
   {
-    section: "about",
-    data: {
-      mission_image_url: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
-    },
-  },
-  {
     section: "media",
     data: {
       hero_image_url: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg",
@@ -98,52 +93,39 @@ const sections = [
   },
 ];
 
+// Real leadership team from sealearn.uk (names and photos as shown on the website)
 const leadership = [
   {
-    name: "Capt. Adebayo Okonkwo",
-    title: "Executive Director / Principal",
-    credential: "Master Mariner (FG), MBA, NIMASA Assessor",
-    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/Capt-Deboos-imgs1.jpg",
-    bio: "Capt. Okonkwo brings over 30 years of sea-going and maritime education experience. A former Master Mariner on VLCC tankers with Shell Nigeria, he founded SeaLearn Nigeria to bridge the gap between the demand for certified Nigerian seafarers and the quality of available training. He holds a Master Mariner Class 1 certificate, an MBA from Lagos Business School, and is a certified NIMASA assessor.",
+    name: "Bhannesh Dogra",
+    title: "Chief Executive Officer",
+    credential: "Senior Maritime Executive",
+    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img1.jpg",
+    bio: "Bhannesh Dogra has over thirty years of experience in the maritime and shipping industry, with a proven track record in maritime operations, cargo handling, crew management, and fleet management. He has worked at leading ship management companies delivering crew management, crew training, quality, safety, and environmental management, and will elevate the crew management solutions its shareholders.",
     sortOrder: 1,
   },
   {
-    name: "Mrs. Amaka Obi",
-    title: "Head of Admissions & Student Affairs",
-    credential: "B.Sc. Maritime Studies, NIMASA Registered",
-    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img1.jpg",
-    bio: "Mrs. Obi oversees the admissions process, student welfare, and academic records. With over 12 years in maritime education administration, she ensures that every student's journey from application to certification is smooth, transparent, and in full compliance with NIMASA requirements.",
+    name: "Captain Kersi Nariman Deboo",
+    title: "Head of Training",
+    credential: "Master Mariner, STCW Certified Assessor",
+    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/Capt-Deboos-imgs1.jpg",
+    bio: "Captain Kersi Nariman Deboo has over 30 years of experience in maritime education and training, including 17 years sailing as a Master Mariner. He has served as Director and Principal of leading maritime training institutes in India. Captain Deboo was a Member (Executive Council) of the Nautical Institute and India & Sri Lanka Branch Chairman. He has also held positions on the Executive Council and Academic committees of the Indian Maritime University, as well as with the Steamship Owners of Shipping.",
     sortOrder: 2,
   },
   {
-    name: "Capt. Emeka Adeyemi",
-    title: "Chief Instructor — Deck",
-    credential: "Chief Mate (Unlimited), STCW Certified Assessor",
+    name: "Engr. Hakeem Olanipekan Odeinde MNSE",
+    title: "General Manager — Hullwheel Affairs",
+    credential: "MNSE, MSc Marine Engineering",
     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img2.jpg",
-    bio: "Capt. Adeyemi is a certified STCW assessor and Chief Mate with 18 years of sea service on container ships and tankers. He leads the Deck department, delivering OOW Deck, Pre-Sea Cadet, GMDSS and survival craft training. He is passionate about producing OOWs who are truly ready for watchkeeping responsibilities from day one.",
+    bio: "Engr. Hakeem Olanipekan Odeinde has over 35 years of experience in marine surveying, ship repairs and drydocking, as well as MSc Marine Engineering. Before joining SeaLearn, he worked at NIMASA as Assisstant Director for the Quality Assurance Unit and served as a Maritime Lecturer at the Petroleum Training Institute of Warri.",
     sortOrder: 3,
   },
   {
-    name: "Engr. Biodun Salami",
-    title: "Chief Instructor — Engineering",
-    credential: "Chief Engineer, MNI, STCW Certified Assessor",
+    name: "Balamurugan",
+    title: "General Manager",
+    credential: "Senior Maritime Manager",
     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img3.jpg",
-    bio: "Engr. Salami is a Chief Engineer with 22 years of experience on bulk carriers and offshore support vessels. He leads the Engineering department, delivering Pre-Sea Engineering Cadet, OOW Engine, and value-added technical courses. He holds a Chief Engineer certificate and is a Member of the Nigerian Institution of Engineers.",
+    bio: "Balamurugan has 20 years of experience in project management, consulting, and market research. Before joining SeaLearn, he has worked with leading engineering institutions and Fortune 500 companies, including Deloitte, Capgemini, DXC, and Accenture.",
     sortOrder: 4,
-  },
-  {
-    name: "Dr. Ngozi Eze",
-    title: "Head of Research & Quality Assurance",
-    credential: "Ph.D. Maritime Law, M.Sc. Safety Engineering",
-    bio: "Dr. Eze manages SeaLearn's ISO 9001:2015 quality management system, curriculum review, and academic research partnerships. She liaisons with NIMASA on regulatory compliance and represents SeaLearn at international maritime education conferences.",
-    sortOrder: 5,
-  },
-  {
-    name: "Mr. Chidi Nwosu",
-    title: "IT & Digital Learning Manager",
-    credential: "B.Sc. Computer Science, Certified EdTech Specialist",
-    bio: "Mr. Nwosu leads SeaLearn's digital transformation — from the student portal and LMS to the AI-powered chatbot and digital certificate issuance. He ensures that technology serves learning and that every student has seamless access to their training resources.",
-    sortOrder: 6,
   },
 ];
 
@@ -165,30 +147,27 @@ async function main() {
     }
   }
 
-  // Upsert leadership
+  // Replace all leadership members with real sealearn.uk team
+  await prisma.leadershipMember.deleteMany({});
+  results.push("CLEARED existing leadership members");
+
   for (const leader of leadership) {
-    const existing = await prisma.leadershipMember.findFirst({ where: { name: leader.name } });
-    if (existing) {
-      await prisma.leadershipMember.update({ where: { id: existing.id }, data: leader });
-      results.push(`UPDATED leader: ${leader.name}`);
-    } else {
-      await prisma.leadershipMember.create({ data: { ...leader, isActive: true } });
-      results.push(`CREATED leader: ${leader.name}`);
-    }
+    await prisma.leadershipMember.create({ data: { ...leader, isActive: true } });
+    results.push(`CREATED leader: ${leader.name}`);
   }
 
-  // Update course images — assign sealearn.uk images by category
+  // Update course images — assign sealearn.uk images by keyword in title
   const courseImages = [
-    { titleContains: "Cadet",      imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png" },
-    { titleContains: "Officer",    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg" },
-    { titleContains: "GMDSS",      imageUrl: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg" },
-    { titleContains: "Safety",     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
-    { titleContains: "Medical",    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
-    { titleContains: "Fire",       imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
-    { titleContains: "Survival",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
-    { titleContains: "Tanker",     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png" },
-    { titleContains: "Security",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg" },
-    { titleContains: "Maritime",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg" },
+    { titleContains: "Cadet",    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png" },
+    { titleContains: "Officer",  imageUrl: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg" },
+    { titleContains: "GMDSS",    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg" },
+    { titleContains: "Safety",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Medical",  imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Fire",     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Survival", imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Tanker",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png" },
+    { titleContains: "Security", imageUrl: "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg" },
+    { titleContains: "Maritime", imageUrl: "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg" },
   ];
 
   const allCourses = await prisma.course.findMany({ select: { id: true, title: true } });
