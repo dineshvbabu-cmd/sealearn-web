@@ -37,7 +37,7 @@ const fallbackImages = [
 export default async function HomePage() {
   const [cfg, dbCourses, dbNews, dbPackages] = await Promise.all([
     getSiteSection("homepage"),
-    prisma.course.findMany({ where: { isActive: true }, orderBy: { level: "asc" }, take: 3, select: { id: true, slug: true, title: true, level: true, durationWeeks: true, feeNaira: true, imageUrl: true } }).catch(() => []),
+    prisma.course.findMany({ where: { isActive: true }, orderBy: { level: "asc" }, take: 3, select: { id: true, slug: true, title: true, level: true, durationWeeks: true, feeNaira: true, imageUrl: true, stcwRegulation: true } }).catch(() => []),
     prisma.post.findMany({ where: { publishedAt: { not: null } }, orderBy: { publishedAt: "desc" }, take: 3 }).catch(() => []),
     prisma.coursePackage.findMany({
       where: { isActive: true },
