@@ -3,6 +3,56 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { z } from "zod";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+
+// ── Shared validators ─────────────────────────────────────────
+const nameRegex = /^[\p{L}\s'\-\.]{2,100}$/u;
+const repetitiveRegex = /(.)\1{4,}/;
+
+function isValidPhone(v: string): boolean {
+  const digits = (v.match(/\d/g) ?? []).length;
+  if (digits < 7 || digits > 15) return false;
+  const stripped = v.replace(/\D/g, "");
+  if (/^(\d)\1+$/.test(stripped)) return false;
+  if (v.startsWith("+")) {
+    const parsed = parsePhoneNumberFromString(v);
+    return !!parsed?.isValid();
+  }
+  return true; // local format accepted
+}
+
+const PersonalSchema = z.object({
+  dateOfBirth: z.string()
+    .min(1, "Date of birth is required.")
+    .refine((v) => {
+      const d = new Date(v);
+      if (isNaN(d.getTime())) return false;
+      const age = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+      return age >= 16 && age <= 80;
+    }, "Applicant must be between 16 and 80 years old."),
+  gender: z.enum(["Male", "Female", "Prefer not to say"], { error: "Please select a valid gender." }),
+  stateOfOrigin: z.string().min(1, "Please select a state of origin."),
+  lga: z.string().max(80).optional().refine(
+    (v) => !v || (nameRegex.test(v) && !repetitiveRegex.test(v)),
+    "LGA should only contain letters and spaces."
+  ),
+  address: z.string()
+    .min(10, "Please enter a full address (at least 10 characters).")
+    .max(500, "Address is too long.")
+    .refine((v) => /\p{L}.*\p{L}/u.test(v), "Address must contain readable text.")
+    .refine((v) => !repetitiveRegex.test(v), "Please enter a real address.")
+    .refine((v) => !/^(test|asdf|qwerty|hello|abc|xxx|n\/a|none)\b/i.test(v.trim()), "Please enter your actual address."),
+  nokName: z.string()
+    .min(2, "Next of kin name must be at least 2 characters.")
+    .max(100)
+    .refine((v) => nameRegex.test(v.trim()), "Name should only contain letters, spaces, hyphens, or apostrophes — no numbers.")
+    .refine((v) => !repetitiveRegex.test(v), "Please enter a real name."),
+  nokRelationship: z.string().min(1, "Please select a relationship."),
+  nokPhone: z.string()
+    .min(1, "Phone number is required.")
+    .refine(isValidPhone, "Please enter a valid phone number with country code (e.g. +234 803 000 0000)."),
+});
 
 async function getUser() {
   const session = await auth();
@@ -51,15 +101,24 @@ export async function savePersonal(
 ): Promise<{ error: string } | null> {
   const userId = await getUser();
 
-  const dobRaw = formData.get("dateOfBirth") as string;
-  const dateOfBirth = dobRaw ? new Date(dobRaw) : null;
-  const gender = (formData.get("gender") as string ?? "").trim() || null;
-  const stateOfOrigin = (formData.get("stateOfOrigin") as string ?? "").trim() || null;
-  const lga = (formData.get("lga") as string ?? "").trim() || null;
-  const address = (formData.get("address") as string ?? "").trim() || null;
-  const nokName = (formData.get("nokName") as string ?? "").trim() || null;
-  const nokRelationship = (formData.get("nokRelationship") as string ?? "").trim() || null;
-  const nokPhone = (formData.get("nokPhone") as string ?? "").trim() || null;
+  const raw = {
+    dateOfBirth: (formData.get("dateOfBirth") as string ?? "").trim(),
+    gender: (formData.get("gender") as string ?? "").trim(),
+    stateOfOrigin: (formData.get("stateOfOrigin") as string ?? "").trim(),
+    lga: (formData.get("lga") as string ?? "").trim() || undefined,
+    address: (formData.get("address") as string ?? "").trim(),
+    nokName: (formData.get("nokName") as string ?? "").trim(),
+    nokRelationship: (formData.get("nokRelationship") as string ?? "").trim(),
+    nokPhone: (formData.get("nokPhone") as string ?? "").trim(),
+  };
+
+  const result = PersonalSchema.safeParse(raw);
+  if (!result.success) {
+    const first = result.error.issues[0];
+    return { error: first.message };
+  }
+
+  const data = result.data;
 
   const app = await prisma.application.findFirst({
     where: { userId, status: "DRAFT" },
@@ -68,7 +127,16 @@ export async function savePersonal(
 
   await prisma.application.update({
     where: { id: app.id },
-    data: { dateOfBirth, gender, stateOfOrigin, lga, address, nokName, nokRelationship, nokPhone },
+    data: {
+      dateOfBirth: new Date(data.dateOfBirth),
+      gender: data.gender,
+      stateOfOrigin: data.stateOfOrigin,
+      lga: data.lga ?? null,
+      address: data.address,
+      nokName: data.nokName,
+      nokRelationship: data.nokRelationship,
+      nokPhone: data.nokPhone,
+    },
   });
 
   redirect("/apply/documents");
