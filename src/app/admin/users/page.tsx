@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 import { Search } from "lucide-react";
 
 const roleColors: Record<string, string> = {
@@ -96,6 +97,7 @@ export default async function AdminUsersPage({
                 <th className="text-center px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Role</th>
                 <th className="text-center px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Enrolments</th>
                 <th className="text-left px-5 py-3 text-xs font-bold text-muted uppercase tracking-wide">Joined</th>
+                <th className="text-left px-4 py-3 text-xs font-bold text-muted uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -112,6 +114,14 @@ export default async function AdminUsersPage({
                   <td className="px-4 py-3 text-center text-muted text-xs">{user._count.enrolments}</td>
                   <td className="px-5 py-3 text-muted text-xs">
                     {user.createdAt.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" })}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/users/${user.id}`}
+                      className="text-[10px] font-bold uppercase px-2 py-1 rounded bg-surface hover:bg-border text-navy transition-colors"
+                    >
+                      Manage
+                    </Link>
                   </td>
                 </tr>
               ))}

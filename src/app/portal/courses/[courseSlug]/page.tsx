@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle, Lock, PlayCircle, FileText, Clock, Library, ExternalLink } from "lucide-react";
-import { getSiteSection } from "@/lib/site-config";
 
 export default async function LMSCourseModulesPage({
   params,
@@ -26,9 +25,6 @@ export default async function LMSCourseModulesPage({
 
   if (!course) notFound();
 
-  // Get Moodle URL from site config
-  const portalCfg = await getSiteSection("portal").catch(() => ({}));
-  const moodleUrl = (portalCfg as Record<string, string>).moodle_url ?? "";
 
   // Verify the user is enrolled
   const enrolment = await prisma.enrolment.findFirst({
@@ -113,16 +109,6 @@ export default async function LMSCourseModulesPage({
                 className="inline-flex items-center gap-1.5 text-xs font-bold bg-jade/20 hover:bg-jade/30 text-jade px-3 py-1.5 rounded-lg transition-colors"
               >
                 <ExternalLink size={12} /> Open Step LMS
-              </a>
-            )}
-            {moodleUrl && (
-              <a
-                href={moodleUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-bold bg-gold/20 hover:bg-gold/30 text-gold px-3 py-1.5 rounded-lg transition-colors"
-              >
-                <ExternalLink size={12} /> Open Moodle
               </a>
             )}
             <Link

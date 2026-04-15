@@ -22,6 +22,8 @@ import {
   Clock,
   BadgeDollarSign,
   Video,
+  HelpCircle,
+  MailOpen,
 } from "lucide-react";
 
 type NavItem = { href: string; icon: React.ElementType; label: string; roles?: string[] };
@@ -40,6 +42,8 @@ const navItems: NavItem[] = [
   { href: "/admin/subscribers", icon: Mail, label: "Subscribers", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/users", icon: Users, label: "Users & Students" },
   { href: "/admin/payments", icon: DollarSign, label: "Payments" },
+  { href: "/admin/help-videos", icon: HelpCircle, label: "Help Videos", roles: ["ADMIN", "SUPER_ADMIN"] },
+  { href: "/admin/email-templates", icon: MailOpen, label: "Email Templates", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/activity", icon: Activity, label: "Activity Log", roles: ["ADMIN", "SUPER_ADMIN"] },
 ];
 

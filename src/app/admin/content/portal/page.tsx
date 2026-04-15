@@ -45,12 +45,14 @@ export default async function PortalCMSPage() {
           <TA name="library_notice" label="Library Notice" defaultValue={cfg.library_notice} rows={2} />
         </div>
 
-        {/* LMS / Moodle Integration */}
-        <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4">
-          <h2 className="font-bold text-navy pb-2 border-b border-border">LMS Integration (Moodle)</h2>
-          <p className="text-xs text-muted">The Moodle URL will appear as an "Open Moodle" button on each enrolled course page in the student portal.</p>
-          <F name="moodle_url" label="Moodle LMS URL" defaultValue={cfg.moodle_url} placeholder="https://lms.sealearn.edu.ng" />
-          <F name="moodle_label" label="LMS Button Label" defaultValue={cfg.moodle_label} placeholder="Open Moodle LMS" />
+        {/* LMS Integration note */}
+        <div className="bg-teal/5 border border-teal/20 rounded-xl p-4">
+          <p className="text-xs text-teal font-semibold mb-1">LMS Links are managed per-enrolment</p>
+          <p className="text-xs text-muted">
+            Each enrolled student&apos;s LMS access URL is set individually via{" "}
+            <a href="/admin/lms" className="text-ocean hover:underline font-semibold">Admin → LMS Links</a>.
+            No global LMS URL is used.
+          </p>
         </div>
 
         {/* Support Contact */}

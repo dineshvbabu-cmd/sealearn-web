@@ -16,6 +16,7 @@ const sidebarLinks = [
   { href: "/portal/certificates", icon: "🎓", label: "My Certificates" },
   { href: "/portal/library", icon: "📖", label: "Library" },
   { href: "/portal/notifications", icon: "🔔", label: "Notifications" },
+  { href: "/portal/help", icon: "❓", label: "Help Centre" },
 ];
 
 const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR"];

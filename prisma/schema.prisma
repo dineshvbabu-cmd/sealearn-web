@@ -49,6 +49,7 @@ model User {
   practicalLogs PracticalLog[]
   examAttempts  ExamAttempt[]
   certificates  Certificate[]
+  permissions   UserPermission[]
   // Instructor relations
   taughtCourses Course[]         @relation("InstructorCourses")
   gradedLogs    PracticalLog[]   @relation("InstructorSignOff")
@@ -554,8 +555,58 @@ model PriceRequest {
 }
 
 // ─────────────────────────────────────────────────────────────
-// LMS INTEGRATION
+// USER PERMISSIONS (per-user page access control)
 // ─────────────────────────────────────────────────────────────
+
+model UserPermission {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource  String   // admin page slug, e.g. "courses", "applications", "payments"
+  canView   Boolean  @default(true)
+  canEdit   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, resource])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// HELP VIDEOS
+// ─────────────────────────────────────────────────────────────
+
+model HelpVideo {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  videoUrl    String   @db.Text  // YouTube embed URL or direct video URL
+  thumbnailUrl String?
+  category    String   @default("general")  // general | admissions | portal | lms | stcw
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([sortOrder])
+}
+
+// ─────────────────────────────────────────────────────────────
+// EMAIL TEMPLATES
+// ─────────────────────────────────────────────────────────────
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  slug        String   @unique  // e.g. "offer-letter", "welcome", "fee-quote"
+  name        String            // human-readable name
+  subject     String
+  bodyHtml    String   @db.Text
+  variables   String?  @db.Text // JSON string: [{name, description, example}]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
 // ─────────────────────────────────────────────────────────────
 // LEADERSHIP TEAM
