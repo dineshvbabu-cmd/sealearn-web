@@ -8,21 +8,7 @@ export const authConfig: NextAuthConfig = {
     error: "/auth/login",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isPortal = nextUrl.pathname.startsWith("/portal");
-      const isAdmin = nextUrl.pathname.startsWith("/admin");
-
-      if (isAdmin) {
-        if (!isLoggedIn) return false;
-        const role = (auth?.user as { role?: string })?.role;
-        return role === "ADMIN" || role === "SUPER_ADMIN";
-      }
-
-      if (isPortal) return isLoggedIn;
-
-      return true;
-    },
+    // Route protection is handled by src/middleware.ts — no authorized callback needed here.
     jwt({ token, user }) {
       if (user) {
         token.id = user.id ?? "";

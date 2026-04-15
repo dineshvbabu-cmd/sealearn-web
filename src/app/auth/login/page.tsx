@@ -35,7 +35,10 @@ export default function StudentLoginPage() {
         }
         setPending(false);
       } else {
-        router.push("/portal/dashboard");
+        // Middleware handles admin role → /admin/dashboard redirect automatically
+        const params = new URLSearchParams(window.location.search);
+        const cb = params.get("callbackUrl");
+        router.push(cb && cb.startsWith("/portal") ? cb : "/portal/dashboard");
         router.refresh();
       }
     } catch {
