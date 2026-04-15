@@ -4,6 +4,7 @@ import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 
 // next-auth v5 throws a special NEXT_REDIRECT error on successful signIn.
 // It MUST be re-thrown so Next.js can perform the navigation.
@@ -76,13 +77,9 @@ export async function registerAction(
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({ data: { name, email, phone, passwordHash, role: "STUDENT" } });
 
-  try {
-    await signIn("credentials", { email, password, redirectTo: "/portal/dashboard" });
-    return null;
-  } catch (err) {
-    if (isRedirect(err)) throw err;
-    return { error: "Account created but auto-login failed. Please log in manually." };
-  }
+  // Do NOT auto-login — redirect to login page with a success notice.
+  // Student must explicitly log in; their application is reviewed before enrolment.
+  redirect("/auth/login?registered=1");
 }
 
 // ── Logout ────────────────────────────────────────────────────

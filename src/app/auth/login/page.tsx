@@ -4,10 +4,13 @@ import Link from "next/link";
 import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function StudentLoginPage() {
+function StudentLoginForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  const registered = params.get("registered") === "1";
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -62,6 +65,12 @@ export default function StudentLoginPage() {
           <div className="px-8 py-8">
             <h1 className="font-cinzel text-navy text-xl font-bold mb-1">Student Login</h1>
             <p className="text-muted text-sm mb-7">Sign in to access your student portal.</p>
+
+            {registered && (
+              <div className="bg-jade/10 border border-jade/30 text-jade text-sm px-4 py-3 rounded-lg mb-5">
+                <span className="font-bold">Account created!</span> Please log in below. Our admissions team will review your application and contact you regarding next steps.
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-5">
@@ -140,5 +149,13 @@ export default function StudentLoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function StudentLoginPage() {
+  return (
+    <Suspense>
+      <StudentLoginForm />
+    </Suspense>
   );
 }

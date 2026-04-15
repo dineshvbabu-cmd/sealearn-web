@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, BookOpen, ClipboardList, TrendingUp, Award, AlertCircle, CheckCircle, ArrowRight } from "lucide-react";
+import { Bell, BookOpen, ClipboardList, TrendingUp, Award, AlertCircle, ArrowRight, FileText, Mail, CheckSquare } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -9,6 +9,13 @@ const todaySchedule = [
   { time: "11:00", subject: "Ship Stability", room: "Hall A", color: "border-l-teal" },
   { time: "14:00", subject: "Bridge Simulator", room: "Sim Lab 1", color: "border-l-jade" },
   { time: "16:00", subject: "Celestial Navigation", room: "Room 2A", color: "border-l-amber" },
+];
+
+const applicationSteps = [
+  { icon: CheckSquare, label: "Account Created", detail: "Your portal account is active.", done: true },
+  { icon: FileText,    label: "Fill Application Form",  detail: "Complete the Google Form (Pre-Sea) or Microsoft Form (STCW). Links sent to your email.", done: false },
+  { icon: Mail,        label: "Receive Offer Letter",   detail: "Admissions team reviews your documents within 3 working days.", done: false },
+  { icon: Award,       label: "Pay & Get Enrolled",     detail: "Accept the personalised fee quote and complete payment to unlock LMS access.", done: false },
 ];
 
 export default async function DashboardPage() {
@@ -62,6 +69,79 @@ export default async function DashboardPage() {
 
   const now = new Date();
   const dateLabel = now.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+
+  // ── No enrolments — show application-pending dashboard ───────
+  if (enrolments.length === 0) {
+    return (
+      <div className="p-6 max-w-3xl mx-auto">
+        <div className="mb-6">
+          <div className="text-muted text-xs uppercase tracking-widest">Student Portal</div>
+          <h1 className="font-cinzel text-2xl text-navy font-bold">
+            Welcome, {session.user?.name?.split(" ")[0]}
+          </h1>
+        </div>
+
+        <div className="bg-amber/10 border border-amber/30 rounded-xl p-4 flex items-start gap-3 mb-6">
+          <AlertCircle size={18} className="text-amber shrink-0 mt-0.5" />
+          <div>
+            <div className="font-bold text-amber text-sm">Application Pending</div>
+            <div className="text-muted text-sm mt-0.5">
+              Your account is active. Complete the steps below to get enrolled. Contact us at{" "}
+              <a href="mailto:admissions@sealearn.edu.ng" className="text-ocean underline">admissions@sealearn.edu.ng</a>{" "}
+              or call <span className="font-semibold">+234 704 280 6167</span> if you need help.
+            </div>
+          </div>
+        </div>
+
+        {/* Application steps */}
+        <div className="bg-white rounded-xl border border-border shadow-sm p-6 mb-5">
+          <h2 className="font-cinzel text-navy font-bold text-base mb-5">Your Admissions Journey</h2>
+          <div className="space-y-5">
+            {applicationSteps.map((step, i) => (
+              <div key={i} className="flex items-start gap-4">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${step.done ? "bg-jade/10 text-jade" : "bg-surface text-muted"}`}>
+                  <step.icon size={16} />
+                </div>
+                <div className="flex-1">
+                  <div className={`font-bold text-sm ${step.done ? "text-jade" : "text-navy"}`}>
+                    {step.done && "✓ "}{step.label}
+                  </div>
+                  <div className="text-muted text-xs mt-0.5">{step.detail}</div>
+                </div>
+                <div className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 ${step.done ? "bg-jade/10 text-jade" : "bg-surface text-muted"}`}>
+                  {step.done ? "Done" : i === 1 ? "Next" : "Pending"}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick contact */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          <a
+            href="mailto:admissions@sealearn.edu.ng?subject=Application Enquiry"
+            className="flex items-center gap-3 bg-white border border-border rounded-xl p-4 hover:bg-surface transition-colors"
+          >
+            <Mail size={20} className="text-ocean shrink-0" />
+            <div>
+              <div className="font-bold text-navy text-sm">Email Admissions</div>
+              <div className="text-muted text-xs">admissions@sealearn.edu.ng</div>
+            </div>
+          </a>
+          <Link
+            href="/courses"
+            className="flex items-center gap-3 bg-white border border-border rounded-xl p-4 hover:bg-surface transition-colors"
+          >
+            <BookOpen size={20} className="text-teal shrink-0" />
+            <div>
+              <div className="font-bold text-navy text-sm">Browse Programmes</div>
+              <div className="text-muted text-xs">View all STCW courses &amp; fees</div>
+            </div>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
