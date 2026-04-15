@@ -114,6 +114,7 @@ model Course {
   nimasaRefNumber      String?
   registrationFormType RegistrationFormType @default(MS_FORM)
   registrationFormUrl  String?              // link to Google/MS form
+  imageUrl             String?              // course card image
   instructorId         String?
   instructor           User?                @relation("InstructorCourses", fields: [instructorId], references: [id])
   createdAt            DateTime             @default(now())
