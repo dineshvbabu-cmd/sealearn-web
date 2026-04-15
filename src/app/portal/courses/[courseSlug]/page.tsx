@@ -105,6 +105,16 @@ export default async function LMSCourseModulesPage({
             <span>{totalModules} modules</span>
           </div>
           <div className="flex items-center gap-2">
+            {enrolment.lmsActive && enrolment.stepLmsUrl && (
+              <a
+                href={enrolment.stepLmsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold bg-jade/20 hover:bg-jade/30 text-jade px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <ExternalLink size={12} /> Open Step LMS
+              </a>
+            )}
             {moodleUrl && (
               <a
                 href={moodleUrl}

@@ -31,7 +31,7 @@ export async function proxy(request: NextRequest) {
   const isLoggedIn = !!token;
   const role = token?.role as string | undefined;
   const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
-  const isStaff = role === "INSTRUCTOR" || role === "REGISTRAR";
+  const isStaff = role === "INSTRUCTOR" || role === "REGISTRAR" || role === "LMS_ADMIN";
   const hasAdminAccess = isAdmin || isStaff;
 
   // Admin routes — ADMIN, SUPER_ADMIN, INSTRUCTOR, REGISTRAR

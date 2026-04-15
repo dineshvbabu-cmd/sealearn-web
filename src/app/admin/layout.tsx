@@ -35,6 +35,7 @@ const navItems: NavItem[] = [
   { href: "/admin/applications", icon: GraduationCap, label: "Applications" },
   { href: "/admin/waitlist", icon: Clock, label: "Waitlist" },
   { href: "/admin/price-requests", icon: BadgeDollarSign, label: "Price Requests" },
+  { href: "/admin/lms", icon: Video, label: "LMS Links", roles: ["ADMIN", "SUPER_ADMIN", "LMS_ADMIN"] },
   { href: "/admin/news", icon: Newspaper, label: "News & Events", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/subscribers", icon: Mail, label: "Subscribers", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/users", icon: Users, label: "Users & Students" },
@@ -42,8 +43,8 @@ const navItems: NavItem[] = [
   { href: "/admin/activity", icon: Activity, label: "Activity Log", roles: ["ADMIN", "SUPER_ADMIN"] },
 ];
 
-const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR"];
-const ALL_ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN", "INSTRUCTOR", "REGISTRAR"];
+const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR", "LMS_ADMIN"];
+const ALL_ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN", "INSTRUCTOR", "REGISTRAR", "LMS_ADMIN"];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
