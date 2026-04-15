@@ -89,8 +89,8 @@ export default async function HomePage() {
         {/* Background ship image */}
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=1600&q=80"
-            alt="Maritime vessel"
+            src="https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg"
+            alt="SeaLearn Nigeria maritime training"
             fill
             className="object-cover opacity-15"
             priority

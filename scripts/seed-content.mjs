@@ -82,6 +82,20 @@ const sections = [
       welcome_message: "Welcome to the SeaLearn Nigeria Student Portal. Access your courses, track progress, download certificates, and manage your maritime training journey.",
     },
   },
+  // ── MEDIA / IMAGES ────────────────────────────────────────────────────────
+  {
+    section: "about",
+    data: {
+      mission_image_url: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
+    },
+  },
+  {
+    section: "media",
+    data: {
+      hero_image_url: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg",
+      about_image_url: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
+    },
+  },
 ];
 
 const leadership = [
@@ -89,6 +103,7 @@ const leadership = [
     name: "Capt. Adebayo Okonkwo",
     title: "Executive Director / Principal",
     credential: "Master Mariner (FG), MBA, NIMASA Assessor",
+    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/Capt-Deboos-imgs1.jpg",
     bio: "Capt. Okonkwo brings over 30 years of sea-going and maritime education experience. A former Master Mariner on VLCC tankers with Shell Nigeria, he founded SeaLearn Nigeria to bridge the gap between the demand for certified Nigerian seafarers and the quality of available training. He holds a Master Mariner Class 1 certificate, an MBA from Lagos Business School, and is a certified NIMASA assessor.",
     sortOrder: 1,
   },
@@ -96,6 +111,7 @@ const leadership = [
     name: "Mrs. Amaka Obi",
     title: "Head of Admissions & Student Affairs",
     credential: "B.Sc. Maritime Studies, NIMASA Registered",
+    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img1.jpg",
     bio: "Mrs. Obi oversees the admissions process, student welfare, and academic records. With over 12 years in maritime education administration, she ensures that every student's journey from application to certification is smooth, transparent, and in full compliance with NIMASA requirements.",
     sortOrder: 2,
   },
@@ -103,6 +119,7 @@ const leadership = [
     name: "Capt. Emeka Adeyemi",
     title: "Chief Instructor — Deck",
     credential: "Chief Mate (Unlimited), STCW Certified Assessor",
+    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img2.jpg",
     bio: "Capt. Adeyemi is a certified STCW assessor and Chief Mate with 18 years of sea service on container ships and tankers. He leads the Deck department, delivering OOW Deck, Pre-Sea Cadet, GMDSS and survival craft training. He is passionate about producing OOWs who are truly ready for watchkeeping responsibilities from day one.",
     sortOrder: 3,
   },
@@ -110,6 +127,7 @@ const leadership = [
     name: "Engr. Biodun Salami",
     title: "Chief Instructor — Engineering",
     credential: "Chief Engineer, MNI, STCW Certified Assessor",
+    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/team-img3.jpg",
     bio: "Engr. Salami is a Chief Engineer with 22 years of experience on bulk carriers and offshore support vessels. He leads the Engineering department, delivering Pre-Sea Engineering Cadet, OOW Engine, and value-added technical courses. He holds a Chief Engineer certificate and is a Member of the Nigerian Institution of Engineers.",
     sortOrder: 4,
   },
@@ -157,6 +175,28 @@ async function main() {
       await prisma.leadershipMember.create({ data: { ...leader, isActive: true } });
       results.push(`CREATED leader: ${leader.name}`);
     }
+  }
+
+  // Update course images — assign sealearn.uk images by category
+  const courseImages = [
+    { titleContains: "Cadet",      imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png" },
+    { titleContains: "Officer",    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg" },
+    { titleContains: "GMDSS",      imageUrl: "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg" },
+    { titleContains: "Safety",     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Medical",    imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Fire",       imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Survival",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg" },
+    { titleContains: "Tanker",     imageUrl: "https://sealearn.uk/wp-content/uploads/2025/07/industrial-510-4.png" },
+    { titleContains: "Security",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg" },
+    { titleContains: "Maritime",   imageUrl: "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg" },
+  ];
+
+  const allCourses = await prisma.course.findMany({ select: { id: true, title: true } });
+  for (const course of allCourses) {
+    const match = courseImages.find((ci) => course.title.includes(ci.titleContains));
+    const imageUrl = match?.imageUrl ?? "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg";
+    await prisma.course.update({ where: { id: course.id }, data: { imageUrl } });
+    results.push(`UPDATED course image: ${course.title}`);
   }
 
   console.log(results.join("\n"));

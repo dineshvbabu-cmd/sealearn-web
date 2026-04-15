@@ -82,11 +82,11 @@ export default async function AboutPage() {
           </div>
           <div className="relative h-72 lg:h-96 rounded-2xl overflow-hidden shadow-lg">
             <Image
-              src={cfg.mission_image_url || "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=900&q=80"}
-              alt="SeaLearn campus"
+              src={cfg.mission_image_url || "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg"}
+              alt="SeaLearn Nigeria campus"
               fill
               className="object-cover"
-              unoptimized={cfg.mission_image_url?.startsWith("https://") && !cfg.mission_image_url?.includes("unsplash")}
+              unoptimized
             />
           </div>
         </div>
@@ -187,13 +187,13 @@ export default async function AboutPage() {
         <h2 className="font-cinzel text-2xl text-navy font-bold mb-6">Campus Life</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=500&q=80",
-            "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=500&q=80",
-            "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=500&q=80",
-            "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&q=80",
+            "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs1.jpg",
+            "https://sealearn.uk/wp-content/uploads/2025/07/About-sea-imgs3.jpg",
+            "https://sealearn.uk/wp-content/uploads/2025/08/About-imgs3.jpg",
+            "https://sealearn.uk/wp-content/uploads/2025/09/sealearn3.jpg",
           ].map((src, i) => (
             <div key={i} className="relative h-44 rounded-xl overflow-hidden">
-              <Image src={src} alt={`Campus ${i + 1}`} fill className="object-cover" />
+              <Image src={src} alt={`Campus ${i + 1}`} fill className="object-cover" unoptimized />
             </div>
           ))}
         </div>
