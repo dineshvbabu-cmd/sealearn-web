@@ -4,15 +4,19 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { SITE_DEFAULTS } from "@/lib/site-config";
+import { logActivity } from "@/lib/activity";
+
+const STAFF_ROLES = ["ADMIN", "SUPER_ADMIN", "REGISTRAR", "INSTRUCTOR"];
 
 async function requireAdmin() {
   const session = await auth();
   const role = (session?.user as { role?: string })?.role;
-  if (!session || (role !== "ADMIN" && role !== "SUPER_ADMIN")) throw new Error("Unauthorized");
+  if (!session || !STAFF_ROLES.includes(role ?? "")) throw new Error("Unauthorized");
+  return session;
 }
 
 export async function saveSiteSection(section: string, formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const defaults = SITE_DEFAULTS[section as keyof typeof SITE_DEFAULTS] ?? {};
 
   const updates = Object.keys(defaults).map((key) => {
@@ -25,6 +29,17 @@ export async function saveSiteSection(section: string, formData: FormData) {
   });
 
   await Promise.all(updates);
+
+  await logActivity({
+    actorId: session.user?.id,
+    actorName: session.user?.name ?? undefined,
+    actorRole: (session.user as { role?: string })?.role ?? undefined,
+    action: "UPDATED_CMS",
+    entity: "SiteConfig",
+    entityLabel: section,
+    detail: `Updated ${Object.keys(defaults).length} fields in "${section}" section`,
+  });
+
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/contact");
@@ -35,7 +50,7 @@ export async function updateApplicationStatus(
   applicationId: string,
   status: "ACCEPTED" | "REJECTED" | "UNDER_REVIEW" | "WAITLISTED"
 ) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const app = await prisma.application.update({
     where: { id: applicationId },
@@ -43,7 +58,21 @@ export async function updateApplicationStatus(
       status,
       reviewedAt: new Date(),
     },
-    include: { course: { select: { feeNaira: true } } },
+    include: {
+      user: { select: { name: true } },
+      course: { select: { title: true, feeNaira: true } },
+    },
+  });
+
+  await logActivity({
+    actorId: session.user?.id,
+    actorName: session.user?.name ?? undefined,
+    actorRole: (session.user as { role?: string })?.role ?? undefined,
+    action: status === "ACCEPTED" ? "APPROVED_APPLICATION" : status === "REJECTED" ? "REJECTED_APPLICATION" : "UPDATED_APPLICATION",
+    entity: "Application",
+    entityId: applicationId,
+    entityLabel: `${app.user.name} → ${app.course.title}`,
+    detail: `Status changed to ${status}`,
   });
 
   // Auto-create enrolment when accepted
@@ -61,9 +90,20 @@ export async function updateApplicationStatus(
           amountPaid: 0,
         },
       });
+      await logActivity({
+        actorId: session.user?.id,
+        actorName: session.user?.name ?? undefined,
+        actorRole: (session.user as { role?: string })?.role ?? undefined,
+        action: "ENROLLED_STUDENT",
+        entity: "Enrolment",
+        entityLabel: `${app.user.name} → ${app.course.title}`,
+        detail: "Enrolment created automatically on application acceptance",
+      });
     }
   }
 
   revalidatePath("/admin/applications");
   revalidatePath("/admin/enrolments");
+  revalidatePath("/admin/waitlist");
+  revalidatePath("/admin/activity");
 }

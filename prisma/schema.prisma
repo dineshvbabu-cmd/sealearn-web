@@ -469,6 +469,51 @@ model CourseResource {
 }
 
 // ─────────────────────────────────────────────────────────────
+// ACTIVITY LOG (Audit Trail)
+// ─────────────────────────────────────────────────────────────
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  actorId     String?  // null = system
+  actorName   String?
+  actorRole   String?
+  action      String   // e.g. "UPDATED_CMS", "APPROVED_APPLICATION", "ENROLLED_STUDENT"
+  entity      String   // e.g. "SiteConfig", "Application", "Enrolment"
+  entityId    String?
+  entityLabel String?  // human-readable name
+  detail      String?  @db.Text
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// WAITLIST
+// ─────────────────────────────────────────────────────────────
+
+enum WaitlistStatus {
+  WAITING
+  NOTIFIED
+  ENROLLED
+  EXPIRED
+}
+
+model Waitlist {
+  id          String        @id @default(cuid())
+  userId      String
+  courseId    String
+  intakeDateId String?
+  status      WaitlistStatus @default(WAITING)
+  notes       String?        @db.Text
+  staffNotes  String?        @db.Text
+  notifiedAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
 // LEADERSHIP TEAM
 // ─────────────────────────────────────────────────────────────
 

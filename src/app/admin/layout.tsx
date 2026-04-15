@@ -18,28 +18,44 @@ import {
   FileEdit,
   Mail,
   UserSquare2,
+  Activity,
+  Clock,
 } from "lucide-react";
 
-const navItems = [
+type NavItem = { href: string; icon: React.ElementType; label: string; roles?: string[] };
+
+const navItems: NavItem[] = [
   { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/content", icon: FileEdit, label: "Content / CMS" },
-  { href: "/admin/about/leadership", icon: UserSquare2, label: "Leadership Team" },
+  { href: "/admin/content", icon: FileEdit, label: "Content / CMS", roles: ["ADMIN", "SUPER_ADMIN"] },
+  { href: "/admin/about/leadership", icon: UserSquare2, label: "Leadership Team", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/courses", icon: BookOpen, label: "Courses & Fees" },
   { href: "/admin/enrolments", icon: ClipboardList, label: "Enrolments" },
   { href: "/admin/applications", icon: GraduationCap, label: "Applications" },
-  { href: "/admin/news", icon: Newspaper, label: "News & Events" },
-  { href: "/admin/subscribers", icon: Mail, label: "Subscribers" },
+  { href: "/admin/waitlist", icon: Clock, label: "Waitlist" },
+  { href: "/admin/news", icon: Newspaper, label: "News & Events", roles: ["ADMIN", "SUPER_ADMIN"] },
+  { href: "/admin/subscribers", icon: Mail, label: "Subscribers", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/users", icon: Users, label: "Users & Students" },
   { href: "/admin/payments", icon: DollarSign, label: "Payments" },
+  { href: "/admin/activity", icon: Activity, label: "Activity Log", roles: ["ADMIN", "SUPER_ADMIN"] },
 ];
+
+const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR"];
+const ALL_ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN", "INSTRUCTOR", "REGISTRAR"];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  const role = session?.user?.role;
+  const role = session?.user?.role as string | undefined;
 
-  if (!session || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
+  if (!session || !ALL_ADMIN_ROLES.includes(role ?? "")) {
     redirect("/auth/admin-login");
   }
+
+  const isStaff = STAFF_ROLES.includes(role ?? "");
+
+  const visibleNav = navItems.filter((item) => {
+    if (!item.roles) return true; // visible to all admin roles
+    return item.roles.includes(role ?? "");
+  });
 
   return (
     <div className="min-h-screen flex bg-surface">
@@ -51,7 +67,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Anchor className="text-gold" size={16} />
             <span className="font-cinzel text-gold text-sm tracking-widest font-bold">SEALEARN</span>
           </div>
-          <p className="text-white/30 text-[10px] tracking-wide">Admin Panel</p>
+          <p className="text-white/30 text-[10px] tracking-wide">{isStaff ? "Staff Portal" : "Admin Panel"}</p>
         </div>
 
         {/* User info */}
@@ -64,7 +80,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {navItems.map((item) => (
+          {visibleNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -78,13 +94,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         {/* Bottom */}
         <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
-          <Link
-            href="/admin/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors text-sm"
-          >
-            <Settings size={16} />
-            Settings
-          </Link>
+          {!isStaff && (
+            <Link
+              href="/admin/settings"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors text-sm"
+            >
+              <Settings size={16} />
+              Settings
+            </Link>
+          )}
           <form action={logoutAction}>
             <button
               type="submit"

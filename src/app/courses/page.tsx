@@ -53,6 +53,15 @@ export default async function CoursesPage() {
       }))
     : staticCourses.map((c) => ({ ...c, id: c.slug, level: "SHORT_COURSE", durationText: c.durationText ?? "", durationWeeks: 4, stcwRegulation: "—", feeNaira: 0 }));
 
+  // Group by level for display
+  type CourseItem = typeof courses[number];
+  const LEVEL_ORDER = ["PRE_SEA", "DEGREE", "SHORT_COURSE", "POST_COC", "REFRESHER"];
+  const coursesByLevel = LEVEL_ORDER.reduce<Record<string, CourseItem[]>>((acc, lvl) => {
+    const grp = courses.filter((c) => c.level === lvl);
+    if (grp.length) acc[lvl] = grp;
+    return acc;
+  }, {});
+
   const packages = dbPackages.map((p) => ({
     id: p.id,
     slug: p.slug,
@@ -111,62 +120,75 @@ export default async function CoursesPage() {
         </div>
       )}
 
-      {/* Featured course cards */}
-      <section className="py-10 px-6 max-w-7xl mx-auto">
-        <h2 className="font-cinzel text-xl text-navy font-bold mb-6">Featured Programmes</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {courses.slice(0, 3).map((course) => (
-            <Link
-              key={course.slug}
-              href={`/courses/${course.slug}`}
-              className="bg-white rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow group"
-            >
-              <div className="relative h-44 overflow-hidden">
-                <Image
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+      {/* Courses grouped by category */}
+      <section className="py-10 px-6 max-w-7xl mx-auto space-y-12">
+        {Object.entries(coursesByLevel).map(([lvl, grp]) => (
+          <div key={lvl}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className={`inline-block text-[11px] font-bold px-3 py-1 rounded-full text-white ${grp[0].tagColor}`}>
+                {LEVEL_LABEL[lvl] ?? lvl.replace("_", " ")}
               </div>
-              <div className="p-4">
-                <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-2 text-white ${course.tagColor}`}>
-                  {LEVEL_LABEL[course.level] ?? course.level}
-                </span>
-                <h3 className="font-bold text-navy text-sm leading-tight mb-1">{course.title}</h3>
-                <p className="text-muted text-xs mb-3">{course.durationText} · NIMASA Approved</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-ocean font-semibold">View details →</span>
-                  {course.stcwRegulation && course.stcwRegulation !== "—" && (
-                    <span className="inline-flex items-center gap-1 bg-navy text-gold text-[10px] font-bold px-2 py-0.5 rounded-full">
-                      ⚓ {course.stcwRegulation}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted">{grp.length} programme{grp.length > 1 ? "s" : ""}</span>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {grp.map((course) => (
+                <Link
+                  key={course.slug}
+                  href={`/courses/${course.slug}`}
+                  className="bg-white rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-all group"
+                >
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
+                      src={course.imageUrl}
+                      alt={course.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {course.nimasaApproved && (
+                      <div className="absolute top-2 right-2 bg-jade text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                        NIMASA ✓
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-navy text-sm leading-tight mb-1">{course.title}</h3>
+                    <p className="text-muted text-xs mb-3">{course.durationText}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-ocean font-semibold group-hover:text-teal transition-colors">View details →</span>
+                      {course.stcwRegulation && course.stcwRegulation !== "—" && (
+                        <span className="inline-flex items-center gap-1 bg-navy text-gold text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          ⚓ {course.stcwRegulation}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
 
         {/* Multi-select course picker */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-cinzel text-xl text-navy font-bold">Build Your Programme</h2>
-            <span className="text-xs text-muted bg-surface border border-border px-3 py-1 rounded-full">
-              Select multiple courses — bundle discounts auto-apply
-            </span>
-          </div>
-          <CoursePicker courses={pickerCourses} packages={packages} />
-        </div>
-
-        {/* Application note */}
-        <div className="bg-navy/5 border border-navy/15 rounded-xl p-4 flex items-start gap-3">
-          <span className="text-xl shrink-0">🇳🇬</span>
+        {packages.length > 0 && (
           <div>
-            <div className="font-bold text-navy text-sm">Application Fee</div>
-            <div className="text-muted text-sm">
-              ₦15,000 non-refundable application fee applies to all programmes. Pay via Paystack,
-              Flutterwave, USSD *737# or bank transfer. Instalment plan: 50% on enrolment, 50% after Month 3.
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-cinzel text-xl text-navy font-bold">Build Your Programme Bundle</h2>
+              <span className="text-xs text-muted bg-surface border border-border px-3 py-1 rounded-full">
+                Select multiple courses — bundle discounts auto-apply
+              </span>
+            </div>
+            <CoursePicker courses={pickerCourses} packages={packages} />
+          </div>
+        )}
+
+        {/* No application fee callout */}
+        <div className="bg-jade/5 border border-jade/20 rounded-xl p-5 flex items-start gap-4">
+          <span className="text-3xl shrink-0">✅</span>
+          <div>
+            <div className="font-bold text-navy text-sm mb-1">No Application Fee</div>
+            <div className="text-muted text-sm leading-relaxed">
+              SeaLearn Nigeria charges <strong>no application fee</strong>. Submit your documents, receive a personalised fee quote, and confirm your place — all at no upfront cost.
             </div>
           </div>
         </div>

@@ -31,20 +31,22 @@ export async function proxy(request: NextRequest) {
   const isLoggedIn = !!token;
   const role = token?.role as string | undefined;
   const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
+  const isStaff = role === "INSTRUCTOR" || role === "REGISTRAR";
+  const hasAdminAccess = isAdmin || isStaff;
 
-  // Admin routes — only ADMIN / SUPER_ADMIN
+  // Admin routes — ADMIN, SUPER_ADMIN, INSTRUCTOR, REGISTRAR
   if (pathname.startsWith("/admin")) {
-    if (!isLoggedIn || !isAdmin) {
+    if (!isLoggedIn || !hasAdminAccess) {
       return NextResponse.redirect(new URL("/auth/admin-login", request.url));
     }
   }
 
-  // Portal routes — must be logged in AND not an admin account
+  // Portal routes — must be logged in; admins redirect to admin panel, staff can view portal (read-only)
   if (pathname.startsWith("/portal")) {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
-    // Admins should use the admin panel, not the student portal
+    // Pure admins → admin panel; staff (INSTRUCTOR/REGISTRAR) may browse portal in read-only mode
     if (isAdmin) {
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }

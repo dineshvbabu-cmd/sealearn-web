@@ -7,8 +7,9 @@ import { redirect } from "next/navigation";
 const sidebarLinks = [
   { href: "/portal/dashboard", icon: "🏠", label: "Dashboard" },
   { href: "/portal/courses", icon: "📚", label: "My Courses (LMS)" },
+  { href: "/portal/assessments", icon: "📝", label: "Mock Assessments" },
   { href: "/portal/timetable", icon: "📅", label: "Timetable" },
-  { href: "/portal/grades", icon: "📊", label: "Grades & Progress" },
+  { href: "/portal/grades", icon: "📊", label: "Grades & KPI" },
   { href: "/portal/practical-log", icon: "📋", label: "Practical Log" },
   { href: "/portal/simulator", icon: "🛳️", label: "Simulator Booking" },
   { href: "/portal/fees", icon: "💳", label: "Fees & Payments" },
@@ -16,6 +17,8 @@ const sidebarLinks = [
   { href: "/portal/library", icon: "📖", label: "Library" },
   { href: "/portal/notifications", icon: "🔔", label: "Notifications" },
 ];
+
+const STAFF_ROLES = ["INSTRUCTOR", "REGISTRAR"];
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -25,11 +28,21 @@ export default async function PortalLayout({ children }: { children: React.React
   const role = (session.user as { role?: string })?.role;
   if (role === "ADMIN" || role === "SUPER_ADMIN") redirect("/admin/dashboard");
 
+  const isStaff = STAFF_ROLES.includes(role ?? "");
+
   const user = session.user;
   const initials = user?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() ?? "S";
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] bg-surface">
+    <div className="flex min-h-[calc(100vh-64px)] bg-surface flex-col">
+      {/* Staff read-only banner */}
+      {isStaff && (
+        <div className="bg-amber-500 text-white text-xs font-bold text-center py-2 px-4 flex items-center justify-center gap-3">
+          <span>👁 STAFF READ-ONLY VIEW — {role?.replace("_", " ")} — You are viewing the student portal. Changes made here may not be saved.</span>
+          <a href="/admin/dashboard" className="underline hover:text-white/80">← Back to Staff Panel</a>
+        </div>
+      )}
+      <div className="flex flex-1">
       {/* Sidebar */}
       <aside className="hidden md:flex w-56 bg-steel flex-col shrink-0">
         {/* Student info header */}
@@ -83,6 +96,7 @@ export default async function PortalLayout({ children }: { children: React.React
       {/* Content */}
       <div className="flex-1 overflow-auto">
         {children}
+      </div>
       </div>
     </div>
   );

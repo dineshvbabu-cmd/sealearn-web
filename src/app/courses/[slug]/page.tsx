@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { courses } from "@/lib/data";
-import { CheckCircle, Clock, ArrowRight, ArrowLeft } from "lucide-react";
+import { CheckCircle, Clock, ArrowRight, ArrowLeft, Mail, Phone } from "lucide-react";
 
 export async function generateStaticParams() {
   return courses.map((c) => ({ slug: c.slug }));
@@ -16,20 +16,6 @@ export default async function CourseDetailPage({
   const { slug } = await params;
   const course = courses.find((c) => c.slug === slug);
   if (!course) notFound();
-
-  const feeBreakdown =
-    course.feeNaira === 480000
-      ? [
-          { label: "Tuition Fee", amount: "₦320,000" },
-          { label: "Simulation Lab", amount: "₦80,000" },
-          { label: "Materials & Uniform Kit", amount: "₦45,000" },
-          { label: "NIMASA Certification Fee", amount: "₦20,000" },
-          { label: "Application Fee (one-time)", amount: "₦15,000", muted: true },
-        ]
-      : [
-          { label: "Programme Fee", amount: course.feeText },
-          { label: "Application Fee (one-time)", amount: "₦15,000", muted: true },
-        ];
 
   return (
     <>
@@ -64,14 +50,21 @@ export default async function CourseDetailPage({
             <span className="inline-flex items-center gap-1 bg-navy text-gold text-xs font-bold px-3 py-1.5 rounded-full border border-gold/30">
               ⚓ {course.stcwRegulation}
             </span>
-            <span className="text-2xl font-cinzel font-bold text-gold">{course.feeText}</span>
           </div>
-          <Link
-            href="/admissions"
-            className="inline-flex items-center gap-2 bg-gold text-navy font-bold px-7 py-3 rounded-full hover:bg-yellow-400 transition-colors"
-          >
-            Apply Now — ₦15,000 Application Fee <ArrowRight size={16} />
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/admissions"
+              className="inline-flex items-center gap-2 bg-gold text-navy font-bold px-7 py-3 rounded-full hover:bg-yellow-400 transition-colors"
+            >
+              Apply Now <ArrowRight size={16} />
+            </Link>
+            <a
+              href={`/contact?subject=Fee+Enquiry:+${encodeURIComponent(course.title)}`}
+              className="inline-flex items-center gap-2 bg-white/15 text-white border border-white/30 font-semibold px-6 py-3 rounded-full hover:bg-white/25 transition-colors"
+            >
+              <Mail size={15} /> Request a Quote
+            </a>
+          </div>
         </div>
       </div>
       <div className="divbar" />
@@ -137,23 +130,27 @@ export default async function CourseDetailPage({
 
         {/* Sidebar */}
         <div className="space-y-5">
-          {/* Fee breakdown */}
+          {/* Request a Quote card */}
           <div className="bg-navy rounded-xl p-5 text-white">
             <div className="text-white/45 text-xs uppercase tracking-wider mb-1">{course.title}</div>
-            <div className="font-cinzel text-gold text-3xl font-bold mb-4">{course.feeText}</div>
-            <div className="border-t border-white/10 pt-4 space-y-2">
-              {feeBreakdown.map((item) => (
-                <div
-                  key={item.label}
-                  className={`flex justify-between text-sm ${item.muted ? "opacity-45" : ""}`}
-                >
-                  <span>{item.label}</span>
-                  <span className="font-semibold">{item.amount}</span>
-                </div>
-              ))}
-            </div>
+            <div className="font-cinzel text-gold text-xl font-bold mb-1">Fees on Request</div>
+            <p className="text-white/55 text-xs mb-4 leading-relaxed">
+              Course fees are tailored to your background and intake date. Request a personalised fee schedule with no obligation.
+            </p>
+            <a
+              href={`mailto:admissions@sealearn.edu.ng?subject=Fee Enquiry: ${course.title}&body=Hello,%0A%0AI am interested in the ${course.title} programme and would like to request a fee schedule.%0A%0AMy details:%0AName:%0APhone:%0APreferred Intake:%0A%0AThank you.`}
+              className="flex items-center justify-center gap-2 bg-gold text-navy font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm w-full mb-2"
+            >
+              <Mail size={14} /> Request a Quote by Email
+            </a>
+            <a
+              href="tel:+2347012345678"
+              className="flex items-center justify-center gap-2 bg-white/10 text-white font-semibold py-2.5 rounded-lg hover:bg-white/20 transition-colors text-sm w-full"
+            >
+              <Phone size={14} /> Call Admissions Team
+            </a>
             <div className="mt-4 bg-white/8 rounded-lg p-3 text-xs text-white/60">
-              💡 Instalment: 50% on enrolment · 50% after Month 3
+              💡 Flexible payment plans available. No application fee.
             </div>
           </div>
 

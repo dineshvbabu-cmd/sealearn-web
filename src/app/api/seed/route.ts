@@ -45,19 +45,41 @@ async function runSeed(request: Request) {
 
   const results: string[] = [];
 
-  // Admin user
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@sealearn.ng";
-  const adminPass = process.env.ADMIN_PASSWORD || "SeaLearn@2025";
+  // ── Demo accounts ────────────────────────────────────────────
+  const demoAccounts = [
+    { email: process.env.ADMIN_EMAIL || "admin@sealearn.ng", name: "SeaLearn Admin", role: "SUPER_ADMIN", pass: process.env.ADMIN_PASSWORD || "SeaLearn@2025" },
+    { email: "registrar@sealearn.ng", name: "Amaka Obi", role: "REGISTRAR", pass: "SeaLearn@2025" },
+    { email: "instructor@sealearn.ng", name: "Capt. Emeka Adeyemi", role: "INSTRUCTOR", pass: "SeaLearn@2025" },
+    { email: "student@sealearn.ng", name: "Chidi Nwachukwu", role: "STUDENT", pass: "Student@2025" },
+    { email: "student2@sealearn.ng", name: "Fatima Bello", role: "STUDENT", pass: "Student@2025" },
+  ];
 
-  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
-  if (!existingAdmin) {
-    const passwordHash = await bcrypt.hash(adminPass, 12);
-    await prisma.user.create({
-      data: { email: adminEmail, name: "SeaLearn Admin", role: "SUPER_ADMIN", passwordHash },
-    });
-    results.push(`Created admin user: ${adminEmail}`);
-  } else {
-    results.push(`Admin user already exists: ${adminEmail}`);
+  for (const acc of demoAccounts) {
+    const existing = await prisma.user.findUnique({ where: { email: acc.email } });
+    if (!existing) {
+      const passwordHash = await bcrypt.hash(acc.pass, 12);
+      await prisma.user.create({
+        data: { email: acc.email, name: acc.name, role: acc.role as "SUPER_ADMIN" | "ADMIN" | "REGISTRAR" | "INSTRUCTOR" | "STUDENT", passwordHash },
+      });
+      results.push(`Created ${acc.role}: ${acc.email}`);
+    } else {
+      results.push(`${acc.role} exists: ${acc.email}`);
+    }
+  }
+
+  // Enrol demo student in BST course if enrolment doesn't exist
+  const bstCourse = await prisma.course.findUnique({ where: { slug: "basic-safety-training" } });
+  const demoStudent = await prisma.user.findUnique({ where: { email: "student@sealearn.ng" } });
+  if (bstCourse && demoStudent) {
+    const existingEnrol = await prisma.enrolment.findFirst({ where: { userId: demoStudent.id, courseId: bstCourse.id } });
+    if (!existingEnrol) {
+      await prisma.enrolment.create({
+        data: { userId: demoStudent.id, courseId: bstCourse.id, status: "ACTIVE", totalFee: bstCourse.feeNaira, amountPaid: bstCourse.feeNaira },
+      });
+      results.push("Enrolled demo student in BST");
+    } else {
+      results.push("Demo student already enrolled in BST");
+    }
   }
 
   // Courses
