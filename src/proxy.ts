@@ -33,7 +33,7 @@ async function getRole(request: NextRequest): Promise<string | null> {
   return (token?.role as string) ?? null;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const role = await getRole(request);
   const isLoggedIn = role !== null;
