@@ -24,6 +24,7 @@ import {
   Video,
   HelpCircle,
   MailOpen,
+  ClipboardCheck,
 } from "lucide-react";
 
 type NavItem = { href: string; icon: React.ElementType; label: string; roles?: string[] };
@@ -38,6 +39,7 @@ const navItems: NavItem[] = [
   { href: "/admin/waitlist", icon: Clock, label: "Waitlist" },
   { href: "/admin/price-requests", icon: BadgeDollarSign, label: "Price Requests" },
   { href: "/admin/lms", icon: Video, label: "LMS Links", roles: ["ADMIN", "SUPER_ADMIN", "LMS_ADMIN"] },
+  { href: "/admin/vir", icon: ClipboardCheck, label: "VIR / QHSE", roles: ["ADMIN", "SUPER_ADMIN", "LMS_ADMIN", "REGISTRAR"] },
   { href: "/admin/news", icon: Newspaper, label: "News & Events", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/subscribers", icon: Mail, label: "Subscribers", roles: ["ADMIN", "SUPER_ADMIN"] },
   { href: "/admin/users", icon: Users, label: "Users & Students" },

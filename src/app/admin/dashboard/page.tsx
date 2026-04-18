@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { BookOpen, Users, Newspaper, GraduationCap, ArrowRight } from "lucide-react";
+import { BookOpen, Users, Newspaper, GraduationCap, ArrowRight, ClipboardCheck } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const [userCount, courseCount, postCount, applicationCount] = await Promise.all([
@@ -127,6 +127,9 @@ export default async function AdminDashboardPage() {
           </Link>
           <Link href="/admin/users" className="inline-flex items-center gap-2 bg-ocean text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-ocean/90 transition-colors">
             <Users size={14} /> Manage Users
+          </Link>
+          <Link href="/admin/vir" className="inline-flex items-center gap-2 bg-navy text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-navy/90 transition-colors">
+            <ClipboardCheck size={14} /> Review VIR Module
           </Link>
         </div>
       </div>
